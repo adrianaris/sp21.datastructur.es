@@ -5,11 +5,11 @@ import java.util.Observable;
 
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author Adrian Serbanescu
  */
 public class Model extends Observable {
     /** Current contents of the board. */
-    private Board board;
+    private final Board board;
     /** Current score. */
     private int score;
     /** Maximum score so far.  Updated when game ends. */
@@ -113,12 +113,39 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        board.setViewingPerspective(side);
+        for (int col = 0; col < board.size(); col++) {
+            changed = moveColumn(col, board.size(), board, changed);
+        }
+        board.setViewingPerspective(Side.NORTH);
+        System.out.print(changed);
 
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
+    }
+
+    private boolean moveColumn(int col, int size, Board b, boolean changed) {
+        boolean moved;
+        moved = changed;
+        for (int row = size - 2; row >= 0; row--) {
+            Tile lastPosition = b.tile(col, size - 1);
+            Tile t = b.tile(col, row);
+            if (t != null) {
+                if (lastPosition == null || lastPosition.value() == t.value()) {
+                    boolean merge = b.move(col, size - 1, t);
+                    moved = true;
+                    if (merge) {
+                        this.score = score + t.value() * 2;
+                        return moveColumn(col, size - 1, b, true);
+                    }
+                } else return moveColumn(col, size - 1, b, true);
+            }
+        }
+
+        return moved;
     }
 
     /** Checks if the game is over and sets the gameOver variable
@@ -137,7 +164,13 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                if (b.tile(i, j) == null) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -147,7 +180,15 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                if (b.tile(i, j) != null) {
+                    if (b.tile(i, j).value() == MAX_PIECE) {
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
@@ -157,8 +198,41 @@ public class Model extends Observable {
      * 1. There is at least one empty space on the board.
      * 2. There are two adjacent tiles with the same value.
      */
+    private static boolean adjacentTileIsEqualValue(Board b, int col, int row) {
+        int[] North = row < b.size() - 1 ? new int[]{col, row + 1} : null;
+        int[] East = col < b.size() - 1 ? new int[]{col + 1, row} : null;
+        int[] South = row > 0 ? new int[]{col, row - 1} : null;
+        int[] West = col > 0 ? new int[]{col - 1, row} : null;
+
+        int NorthValue = North != null && b.tile(North[0], North[1]) != null ? b.tile(North[0], North[1]).value() : -1;
+        int EastValue = East != null && b.tile(East[0], East[1]) != null ? b.tile(East[0], East[1]).value() : -1;
+        int SouthValue = South != null && b.tile(South[0], South[1]) != null ? b.tile(South[0], South[1]).value() : -1;
+        int WestValue = West != null && b.tile(West[0], West[1]) != null ? b.tile(West[0], West[1]).value() : -1;
+
+        if (b.tile(col, row) != null) {
+            if (NorthValue != -1 && NorthValue == b.tile(col, row).value()) {
+                return true;
+            } else if (EastValue != -1 && EastValue == b.tile(col, row).value()) {
+                return true;
+            } else if (SouthValue != -1 && SouthValue == b.tile(col, row).value()) {
+                return true;
+            } else return WestValue != -1 && WestValue == b.tile(col, row).value();
+        } else {
+            return false;
+        }
+    }
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+
+        if (emptySpaceExists(b)) {
+            return true;
+        } else {
+            for (int i = 0; i < b.size(); i++) {
+                for (int j = 0; j < b.size(); j++) {
+                    if (adjacentTileIsEqualValue(b, i, j)) return true;
+                }
+            }
+        }
         return false;
     }
 
