@@ -141,7 +141,7 @@ public class Model extends Observable {
                         this.score = score + t.value() * 2;
                         return moveColumn(col, size - 1, b, true);
                     }
-                } else return moveColumn(col, size - 1, b, true);
+                } else return moveColumn(col, size - 1, b, moved);
             }
         }
 
