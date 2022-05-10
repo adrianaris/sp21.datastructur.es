@@ -1,5 +1,6 @@
 package timingtest;
 import edu.princeton.cs.algs4.Stopwatch;
+//import javafx.scene.paint.Stop;
 
 /**
  * Created by hug.
@@ -23,5 +24,24 @@ public class TimeAList {
 
     public static void timeAListConstruction() {
         // TODO: YOUR CODE HERE
+        AList<Integer> aList = new AList();
+
+        AList<Integer> Ns = new AList();
+        AList<Double> times = new AList();
+        AList<Integer> opCounts = new AList();
+        int powerOfTwo = 16;
+        for (int i = 0; i <= powerOfTwo; i+=1) {
+            int numberOfItems = (int)Math.pow(2, i) * 1000;
+            Stopwatch sw = new Stopwatch();
+            for (int j = 0; j < numberOfItems; j+=1) {
+                aList.addLast(j);
+            }
+            double time = sw.elapsedTime();
+            times.addLast(time);
+            Ns.addLast(numberOfItems);
+            opCounts.addLast(numberOfItems);
+        }
+
+        printTimingTable(Ns, times, opCounts);
     }
 }
