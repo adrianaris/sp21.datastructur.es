@@ -29,7 +29,7 @@ public class TimeAList {
         AList<Integer> Ns = new AList();
         AList<Double> times = new AList();
         AList<Integer> opCounts = new AList();
-        int powerOfTwo = 16;
+        int powerOfTwo = 7;
         for (int i = 0; i <= powerOfTwo; i+=1) {
             int numberOfItems = (int)Math.pow(2, i) * 1000;
             Stopwatch sw = new Stopwatch();
