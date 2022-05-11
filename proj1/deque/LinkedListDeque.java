@@ -11,6 +11,8 @@ public class LinkedListDeque<Item> implements Deque<Item> {
 
         public Node(Item i) {
             item = i;
+            prev = this;
+            next = prev;
         }
     }
 
@@ -74,9 +76,17 @@ public class LinkedListDeque<Item> implements Deque<Item> {
     public int size() {
         return size;
     }
-//    public void printDeque() {
-//        return;
-//    }
+    public void printDeque() {
+        Node L = sentinel.next;
+        StringBuilder listItems = new StringBuilder(L.item.toString());
+        while (L.next != sentinel) {
+            L = L.next;
+            listItems.append(" ").append(L.item.toString());
+        }
+
+        System.out.println(listItems);
+        System.out.print("\n");
+    }
 
     /**
      *  The get() method iterates from the beginning if the
@@ -126,5 +136,6 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         System.out.println("shift: " + shift);
         System.out.println("pop: " + pop);
         System.out.println("size " + LD.size());
+        LD.printDeque();
     }
 }
