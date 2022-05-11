@@ -29,25 +29,41 @@ public class TestBuggyAList {
 
     public static void randomizedTest() {
         AListNoResizing<Integer> L = new AListNoResizing<>();
+        BuggyAList<Integer> B = new BuggyAList<>();
 
-        int N = 500;
+        int N = 5000;
         for (int i = 0; i < N; i += 1) {
-            int operationNumber = StdRandom.uniform(0, 2);
+            int operationNumber = StdRandom.uniform(0, 4);
             if (operationNumber == 0) {
                 // addLast
                 int randVal = StdRandom.uniform(0, 100);
                 L.addLast(randVal);
-                System.out.println("addLast(" + randVal + ")");
+                B.addLast(randVal);
             } else if (operationNumber == 1) {
                 // size
                 int size = L.size();
-                System.out.println("size: " + size);
+                int bSize = B.size();
+                assertEquals(size, bSize);
+            } else if (operationNumber == 2) {
+                // getLast
+                if (L.size() > 0) {
+                    int lastVal = L.getLast();
+                    int bLastVal = B.getLast();
+                    assertEquals(lastVal, bLastVal);
+                }
+            } else if (operationNumber == 3) {
+                // removeLast
+                if (L.size() > 0) {
+                    int lastVal = L.removeLast();
+                    int bLastVal = B.removeLast();
+                    assertEquals(lastVal, bLastVal);
+                }
             }
         }
     }
 
     public static void main(String[] args) {
-       //testThreeAddThreeRemove();
+       testThreeAddThreeRemove();
        randomizedTest();
     }
 }
