@@ -80,9 +80,33 @@ public class LinkedListDeque<Item> implements Deque<Item> {
 //    public Item removeLast() {
 //        return;
 //    }
-//    public Item get(int index) {
-//        return;
-//    }
+
+    /**
+     *  The get() method iterates from the beginning if the
+     *  index is closer to the beginning of the list
+     *  and from the end if index is closer to the end.
+     */
+    public Item get(int index) {
+        if (index < size / 2) {
+            Node L = sentinel.next;
+            int pozition = 0;
+            while (pozition != index) {
+                pozition += 1;
+                L = L.next;
+            }
+
+            return L.item;
+        } else {
+            Node L = sentinel.prev;
+            int pozition = size - 1;
+            while (pozition != index) {
+                pozition -= 1;
+                L = L.prev;
+            }
+            return L.item;
+        }
+    }
+
 //    public Iterator<Item> iterator() {
 //        return;
 //    }
