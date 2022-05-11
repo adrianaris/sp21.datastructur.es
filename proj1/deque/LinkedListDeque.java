@@ -49,6 +49,22 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         size += 1;
     }
 
+    public Item shift() {
+       Node removed = sentinel.next;
+       sentinel.next = sentinel.next.next;
+       sentinel.next.prev = sentinel;
+       size -= 1;
+       return removed.item;
+    }
+
+    public Item pop() {
+        Node removed = sentinel.prev;
+        sentinel.prev = sentinel.prev.prev;
+        sentinel.prev.next = sentinel;
+        size -= 1;
+        return removed.item;
+    }
+
 //    public boolean isEmpty() {
 //        return;
 //    }
@@ -81,6 +97,10 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         LD.addLast(2);
         LD.addLast(3);
         LD.addLast(4);
+        int shift = LD.shift();
+        int pop = LD.pop();
+        System.out.println(shift);
+        System.out.println(pop);
         System.out.println(LD.size());
     }
 }
