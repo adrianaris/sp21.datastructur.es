@@ -67,7 +67,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
     }
 
     public boolean isEmpty() {
-        if (sentinel.next == null) return true;
+        if (sentinel.next == null || size == 0) return true;
         return false;
     }
 
