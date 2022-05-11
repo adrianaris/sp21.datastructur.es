@@ -1,5 +1,6 @@
 package deque;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 public class LinkedListDeque<Item> implements Deque<Item> {
@@ -65,19 +66,15 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         return removed.item;
     }
 
-//    public boolean isEmpty() {
-//        return;
-//    }
+    public boolean isEmpty() {
+        if (sentinel.next == null) return true;
+        return false;
+    }
+
     public int size() {
         return size;
     }
 //    public void printDeque() {
-//        return;
-//    }
-//    public Item removeFirst() {
-//        return;
-//    }
-//    public Item removeLast() {
 //        return;
 //    }
 
@@ -87,6 +84,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
      *  and from the end if index is closer to the end.
      */
     public Item get(int index) {
+        if (index >= size || index < 0) throw new Error("Index out of bounds!!!");
         if (index < size / 2) {
             Node L = sentinel.next;
             int pozition = 0;
@@ -115,7 +113,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
 //    }
 
     public static void main(String[] args) {
-        LinkedListDeque<Integer> LD = new LinkedListDeque(1);
+        LinkedListDeque<Integer> LD = new LinkedListDeque();
         LD.addFirst(0);
         LD.addFirst(-1);
         LD.addLast(2);
@@ -123,8 +121,10 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         LD.addLast(4);
         int shift = LD.shift();
         int pop = LD.pop();
-        System.out.println(shift);
-        System.out.println(pop);
-        System.out.println(LD.size());
+        int got = LD.get(0);
+        System.out.println("get: " + got);
+        System.out.println("shift: " + shift);
+        System.out.println("pop: " + pop);
+        System.out.println("size " + LD.size());
     }
 }
