@@ -3,10 +3,14 @@ package deque;
 public class ArrayDeque<Item> implements Deque<Item> {
      private Item[] items;
      private int size;
+     private int nextFirst;
+     private int nextLast;
 
      public ArrayDeque() {
          items = (Item []) new Object[8];
          size = 0;
+         nextFirst = items.length / 2;
+         nextLast = nextFirst + 1;
      }
 
      public int size() {
@@ -18,29 +22,69 @@ public class ArrayDeque<Item> implements Deque<Item> {
      */
      private void resize(int capacity) {
          Item[] newItems = (Item[]) new Object[capacity];
-         System.arraycopy(items, 0, newItems, 0, size);
+         // Copy from first item in the array which is nexLast when full
+         // until the remainder of the array
+         if (capacity > items.length) {
+             System.arraycopy(items,
+                     nextLast,
+                     newItems,
+                     0,
+                     size - nextLast);
+             // Fill in what is left from the beginning until where we started
+             System.arraycopy(items,
+                     0,
+                     newItems,
+                     size - nextLast,
+                     nextLast);
+         } else {
+             if (nextFirst > nextLast) {
+                 System.arraycopy(items,
+                         nextFirst + 1,
+                         newItems,
+                         0,
+                         items.length - 1 - nextFirst);
+                 System.arraycopy(items,
+                         0,
+                         newItems,
+                         items.length - 1 - nextFirst,
+                         nextLast);
+             } else {
+                 System.arraycopy(items,
+                         nextFirst + 1,
+                         newItems,
+                         0,
+                         size);
+             }
+         }
+         nextLast = size;
+         nextFirst = newItems.length - 1;
          items = newItems;
      }
 
-     public void addFirst(Item i) {
-         Item[] newItems;
+    public void addFirst(Item i) {
          if (size == items.length) {
-             newItems = (Item[]) new Object[(int) (size * 1.5)];
-         } else {
-             newItems = (Item[]) new Object[size];
+             resize(size * 2);
          }
-         newItems[0] = i;
-         System.arraycopy(items, 0, newItems, 1, size);
-         items = newItems;
-         size += 1;
+         items[nextFirst] = i;
+         if (nextFirst- 1 < 0) {
+             nextFirst= items.length - 1;
+         } else {
+             nextFirst--;
+         }
+         size++;
      }
 
      public void addLast(Item i) {
          if (size == items.length) {
-             resize((int) (size * 1.5));
+             resize(size * 2);
          }
-         items[size] = i;
-         size += 1;
+         items[nextLast] = i;
+         if (nextLast + 1 == items.length) {
+             nextLast = 0;
+         } else {
+             nextLast++;
+         }
+         size++;
      }
 
      public Item getLast() {
@@ -54,13 +98,18 @@ public class ArrayDeque<Item> implements Deque<Item> {
      }
 
      public Item removeLast() {
-         Item toRemove = items[size - 1];
-         items[size - 1] = null;
-         size -= 1;
-
-         if (size < items.length / 4 && size > 16) {
+         if (size - 1 < items.length / 4) {
              resize((int) (size * 1.5));
          }
+
+         Item toRemove = items[nextLast - 1];
+         items[nextLast - 1] = null;
+         if (nextLast - 1 < 0) {
+             nextLast = items.length - 1;
+         } else {
+             nextLast--;
+         }
+         size -= 1;
 
          return toRemove;
      }
@@ -68,7 +117,30 @@ public class ArrayDeque<Item> implements Deque<Item> {
      public static void main(String[] args) {
          ArrayDeque<Integer> aL = new ArrayDeque();
          aL.addFirst(1);
+         aL.addFirst(0);
          aL.addLast(2);
-         System.out.println(aL.getLast());
+         aL.addLast(3);
+         aL.addFirst(-1);
+         aL.addFirst(-2);
+         aL.addFirst(-3);
+         aL.addLast(4);
+         for (int i = -4; i > -14; i--) {
+             aL.addFirst(i);
+         }
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
      }
 }
