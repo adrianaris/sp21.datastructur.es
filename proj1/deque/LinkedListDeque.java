@@ -147,12 +147,12 @@ public class LinkedListDeque<Item> implements Deque<Item> {
 //    public Iterator<Item> iterator() {
 //        return;
 //    }
-//    public boolean equals(Object o) {
-//        if (o instanceof LinkedListDeque) {
-//            return true;
-//        }
-//        return false;
-//    }
+    public boolean equals(Object o) {
+        if (o instanceof LinkedListDeque && o.hashCode() == this.hashCode()) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * According to the style sheet I have to implement this
@@ -173,7 +173,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
     public static void main(String[] args) {
         LinkedListDeque<Integer> LD = new LinkedListDeque(1);
         LinkedListDeque<String> LDs = new LinkedListDeque("s");
-        LinkedListDeque<String> LDt = new LinkedListDeque("s");
+        LinkedListDeque<String> LDt = new LinkedListDeque("r");
         LD.addFirst(0);
         LD.addFirst(-1);
         LD.addLast(2);
@@ -189,5 +189,6 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         System.out.println("size " + LD.size());
         LD.printDeque();
         System.out.println("LD: " + LD.hashCode() + " || LDs: " + LDs.hashCode() + " || LDt: " + LDt.hashCode());
+        System.out.println(LDt.equals(LDs));
     }
 }
