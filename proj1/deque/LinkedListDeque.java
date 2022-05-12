@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.Iterator;
 
 public class LinkedListDeque<Item> implements Deque<Item> {
+    /**
+     * At the teacher recommendation I decided to write a DLList
+     * with one sentinel keeping track of both head and tail.
+     */
     private class Node {
         public Node prev;
         public Item item;
@@ -115,6 +119,30 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         }
     }
 
+    public Item getRecursive(int index) {
+        return getRecursive(index, sentinel);
+    }
+
+    /**
+     * This is a helper method for getRecursive main method.
+     * It functions in the same vein with the iterative method:
+     *     if index is nearer to the start it starts from the start;
+     *     if index is nearer to the end it starts from the end.
+     */
+    private Item getRecursive(int index, Node list) {
+        if (index == 0) {
+            return list.next.item;
+        } else if (index == size - 1) {
+            return list.prev.item;
+        }
+
+        if (index < size / 2) {
+            return getRecursive(index - 1, list.next);
+        } else {
+            return getRecursive(index + 1, list.prev);
+        }
+    }
+
 //    public Iterator<Item> iterator() {
 //        return;
 //    }
@@ -123,7 +151,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
 //    }
 
     public static void main(String[] args) {
-        LinkedListDeque<Integer> LD = new LinkedListDeque();
+        LinkedListDeque<Integer> LD = new LinkedListDeque(1);
         LD.addFirst(0);
         LD.addFirst(-1);
         LD.addLast(2);
@@ -131,8 +159,9 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         LD.addLast(4);
         int shift = LD.shift();
         int pop = LD.pop();
-        int got = LD.get(0);
-        System.out.println("get: " + got);
+        int got = LD.get(2);
+        int gotR = LD.getRecursive(2);
+        System.out.println("get: " + got + " | getR: " + gotR);
         System.out.println("shift: " + shift);
         System.out.println("pop: " + pop);
         System.out.println("size " + LD.size());
