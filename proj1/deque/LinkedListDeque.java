@@ -144,6 +144,9 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         }
     }
 
+    /**
+     * To be developed after lecture 11
+     */
 //    public Iterator<Item> iterator() {
 //        return;
 //    }
