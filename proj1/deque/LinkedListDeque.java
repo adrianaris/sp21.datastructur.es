@@ -101,18 +101,18 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         if (index >= size || index < 0) throw new Error("Index out of bounds!!!");
         if (index < size / 2) {
             Node L = sentinel.next;
-            int pozition = 0;
-            while (pozition != index) {
-                pozition += 1;
+            int position = 0;
+            while (position != index) {
+                position += 1;
                 L = L.next;
             }
 
             return L.item;
         } else {
             Node L = sentinel.prev;
-            int pozition = size - 1;
-            while (pozition != index) {
-                pozition -= 1;
+            int position = size - 1;
+            while (position != index) {
+                position -= 1;
                 L = L.prev;
             }
             return L.item;
@@ -128,6 +128,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
      * It functions in the same vein with the iterative method:
      *     if index is nearer to the start it starts from the start;
      *     if index is nearer to the end it starts from the end.
+     * It receives sentinel as argument.
      */
     private Item getRecursive(int index, Node list) {
         if (index == 0) {
@@ -147,11 +148,32 @@ public class LinkedListDeque<Item> implements Deque<Item> {
 //        return;
 //    }
 //    public boolean equals(Object o) {
-//        return;
+//        if (o instanceof LinkedListDeque) {
+//            return true;
+//        }
+//        return false;
 //    }
+
+    /**
+     * According to the style sheet I have to implement this
+     * because I implement equals() above
+     */
+    public int hashCode() {
+        Node tmp = sentinel;
+        int ListHash = 0;
+        while (tmp.next != sentinel) {
+            tmp = tmp.next;
+            ListHash += tmp.item.hashCode();
+        }
+        int result = 31;
+        result = result + size + ListHash;
+        return result;
+    }
 
     public static void main(String[] args) {
         LinkedListDeque<Integer> LD = new LinkedListDeque(1);
+        LinkedListDeque<String> LDs = new LinkedListDeque("s");
+        LinkedListDeque<String> LDt = new LinkedListDeque("s");
         LD.addFirst(0);
         LD.addFirst(-1);
         LD.addLast(2);
@@ -166,5 +188,6 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         System.out.println("pop: " + pop);
         System.out.println("size " + LD.size());
         LD.printDeque();
+        System.out.println("LD: " + LD.hashCode() + " || LDs: " + LDs.hashCode() + " || LDt: " + LDt.hashCode());
     }
 }
