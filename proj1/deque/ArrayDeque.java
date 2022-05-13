@@ -9,8 +9,14 @@ public class ArrayDeque<Item> implements Deque<Item> {
      public ArrayDeque() {
          items = (Item []) new Object[8];
          size = 0;
-         nextFirst = items.length / 2;
-         nextLast = nextFirst + 1;
+         /**
+          *  Next first is the end of the array and nextLast is the beginning,
+          *  so that they converge towards each other and we, at all times,
+          *  are able to anticipate the way the array is filled and depleted
+          *  making it easier to comprehend and resize it.
+          */
+         nextFirst = items.length - 1;
+         nextLast = 0;
      }
 
      public int size() {
@@ -22,40 +28,20 @@ public class ArrayDeque<Item> implements Deque<Item> {
      */
      private void resize(int capacity) {
          Item[] newItems = (Item[]) new Object[capacity];
-         // Copy from first item in the array which is nexLast when full
-         // until the remainder of the array
-         if (capacity > items.length) {
-             System.arraycopy(items,
-                     nextLast,
-                     newItems,
-                     0,
-                     size - nextLast);
-             // Fill in what is left from the beginning until where we started
-             System.arraycopy(items,
-                     0,
-                     newItems,
-                     size - nextLast,
-                     nextLast);
-         } else {
-             if (nextFirst > nextLast) {
-                 System.arraycopy(items,
-                         nextFirst + 1,
-                         newItems,
-                         0,
-                         items.length - 1 - nextFirst);
-                 System.arraycopy(items,
-                         0,
-                         newItems,
-                         items.length - 1 - nextFirst,
-                         nextLast);
-             } else {
-                 System.arraycopy(items,
-                         nextFirst + 1,
-                         newItems,
-                         0,
-                         size);
-             }
-         }
+         /**
+          * Copy from nextFirst until the end of the array
+          * and then from the beginning until nextLast.
+          */
+         System.arraycopy(items,
+                 nextFirst + 1,
+                 newItems,
+                 0,
+                 items.length - 1 - nextFirst);
+         System.arraycopy(items,
+                 0,
+                 newItems,
+                 items.length - 1 - nextFirst,
+                 nextLast);
          nextLast = size;
          nextFirst = newItems.length - 1;
          items = newItems;
