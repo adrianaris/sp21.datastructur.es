@@ -31,17 +31,29 @@ public class ArrayDeque<Item> implements Deque<Item> {
          /**
           * Copy from nextFirst until the end of the array
           * and then from the beginning until nextLast.
+          *     or
+          * From nextFirst to nextLast should nextFirst or NextLast
+          * has moved past first index or last index respectively in
+          * the process of shifting() or poping().
           */
-         System.arraycopy(items,
-                 nextFirst + 1,
-                 newItems,
-                 0,
-                 items.length - 1 - nextFirst);
-         System.arraycopy(items,
-                 0,
-                 newItems,
-                 items.length - 1 - nextFirst,
-                 nextLast);
+         if (nextFirst < nextLast - 1) {
+             System.arraycopy(items,
+                     nextFirst + 1,
+                     newItems,
+                     0,
+                     nextLast - nextFirst + 1);
+         } else {
+             System.arraycopy(items,
+                     nextFirst + 1,
+                     newItems,
+                     0,
+                     items.length - 1 - nextFirst);
+             System.arraycopy(items,
+                     0,
+                     newItems,
+                     items.length - 1 - nextFirst,
+                     nextLast);
+         }
          nextLast = size;
          nextFirst = newItems.length - 1;
          items = newItems;
@@ -83,19 +95,38 @@ public class ArrayDeque<Item> implements Deque<Item> {
          return items[index];
      }
 
-     public Item removeLast() {
+     public Item pop() {
          if (size - 1 < items.length / 4) {
              resize((int) (size * 1.5));
          }
 
-         Item toRemove = items[nextLast - 1];
-         items[nextLast - 1] = null;
          if (nextLast - 1 < 0) {
              nextLast = items.length - 1;
          } else {
              nextLast--;
          }
+         Item toRemove = items[nextLast];
+         items[nextLast] = null;
+
          size -= 1;
+
+         return toRemove;
+     }
+
+     public Item shift() {
+         if (size - 1 < items.length / 4) {
+             resize((int) (size * 1.5));
+         }
+
+         if (nextFirst + 1 > items.length -1) {
+             nextFirst = 0;
+         } else {
+             nextFirst++;
+         }
+
+         Item toRemove = items[nextFirst];
+         items[nextFirst] = null;
+         size--;
 
          return toRemove;
      }
@@ -113,20 +144,19 @@ public class ArrayDeque<Item> implements Deque<Item> {
          for (int i = -4; i > -14; i--) {
              aL.addFirst(i);
          }
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
+         aL.shift();
+         aL.shift();
+         aL.shift();
+         aL.shift();
+         aL.shift();
+         aL.shift();
+         aL.shift();
+         aL.shift();
+         aL.shift();
+         aL.shift();
+         aL.shift();
+         aL.shift();
+         aL.shift();
+         aL.shift();
      }
 }
