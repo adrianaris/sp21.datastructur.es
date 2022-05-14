@@ -87,12 +87,22 @@ public class ArrayDeque<Item> implements Deque<Item> {
 
      public Item getLast() {
          if (size == 0) throw new Error("List is empty");
-         return items[size - 1];
+         if (nextLast - 1 >= 0) {
+             return items[nextLast - 1];
+         } else {
+             return items[items.length - 1];
+         }
+
      }
 
      public Item get(int index) {
          if (index < 0 || index >= size) throw new Error("Index out of bounds");
-         return items[index];
+         if (nextFirst + 1 + index < items.length) {
+             return items[nextFirst + 1 + index];
+         } else {
+             index = index - items.length + nextFirst + 1;
+             return items[index];
+         }
      }
 
      public Item pop() {
@@ -131,25 +141,75 @@ public class ArrayDeque<Item> implements Deque<Item> {
          return toRemove;
      }
 
+     public boolean isEmpty() {
+         if (size == 0) return true;
+         return false;
+     }
+
+     public void printDeque() {
+         StringBuilder listItems = new StringBuilder(size);
+         for (int i = 0; i < size; i++) {
+             if (nextFirst + 1 + i < items.length) {
+                 listItems.append(" ").append(items[nextFirst + 1 + i].toString());
+             } else {
+                 listItems.append(" ").append(items[i - items.length + nextFirst + 1].toString());
+             }
+         }
+
+         System.out.println(listItems);
+         System.out.print("\n");
+     }
+
+    public boolean equals(Object o) {
+        if (o instanceof ArrayDeque && o.hashCode() == this.hashCode()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * According to the style sheet I have to implement this
+     * because I implement equals() above
+     */
+    public int hashCode() {
+        int ListHash = 0;
+        for (int i = 0; i < size; i++) {
+            if (nextFirst + 1 + i < items.length) {
+                ListHash += items[nextFirst + 1 + i].hashCode();
+            } else {
+                ListHash += items[nextFirst + 1 + i - items.length].hashCode();
+            }
+        }
+        int result = 37;
+        result = result + size + ListHash;
+        return result;
+    }
+
      public static void main(String[] args) {
          ArrayDeque<Integer> aL = new ArrayDeque();
+         ArrayDeque<Integer> aH = new ArrayDeque();
+         aH.addFirst(1);
+         System.out.println("size " + aL.size);
          aL.addFirst(1);
+         System.out.println(aL.equals(aH));
          aL.addFirst(0);
          aL.addLast(2);
          aL.addLast(3);
          aL.addFirst(-1);
          aL.addFirst(-2);
+         System.out.println(aL.get(5));
          aL.addFirst(-3);
          aL.addLast(4);
          for (int i = -4; i > -14; i--) {
              aL.addFirst(i);
          }
+         aL.pop();
          aL.shift();
          aL.shift();
          aL.shift();
          aL.shift();
          aL.shift();
-         aL.shift();
+         aL.printDeque();
          aL.shift();
          aL.shift();
          aL.shift();
