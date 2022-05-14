@@ -36,14 +36,14 @@ public class ArrayDeque<Item> implements Deque<Item> {
           * has moved past first index or last index respectively in
           * the process of shifting() or poping().
           */
-         if (nextFirst < nextLast - 1) {
+         if (nextFirst < nextLast - 1 || nextFirst == items.length - 1) {
+             if (nextFirst == items.length - 1) nextFirst = -1;
              System.arraycopy(items,
                      nextFirst + 1,
                      newItems,
                      0,
-                     nextLast - nextFirst + 1);
+                     size);
          } else {
-             if (nextFirst == items.length - 1) nextFirst = -1;
              System.arraycopy(items,
                      nextFirst + 1,
                      newItems,
@@ -213,13 +213,18 @@ public class ArrayDeque<Item> implements Deque<Item> {
          aL.removeFirst();
          aL.removeFirst();
          aL.printDeque();
-         aL.removeFirst();
-         aL.removeFirst();
-         aL.removeFirst();
-         aL.removeFirst();
-         aL.removeFirst();
-         aL.removeFirst();
-         aL.removeFirst();
-         aL.removeFirst();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
+         aL.removeLast();
      }
 }
