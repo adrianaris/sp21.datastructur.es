@@ -106,6 +106,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
      }
 
      public Item removeLast() {
+         if (size == 0) return null;
          if (size - 1 < items.length / 4) {
              resize((int) (size * 1.5));
          }
@@ -124,6 +125,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
      }
 
      public Item removeFirst() {
+         if(size == 0) return null;
          if (size - 1 < items.length / 4) {
              resize((int) (size * 1.5));
          }

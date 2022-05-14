@@ -57,14 +57,18 @@ public class LinkedListDeque<Item> implements Deque<Item> {
     }
 
     public Item removeFirst() {
-       Node removed = sentinel.next;
-       sentinel.next = sentinel.next.next;
-       sentinel.next.prev = sentinel;
-       size -= 1;
-       return removed.item;
+        if (size == 0) return null;
+
+        Node removed = sentinel.next;
+        sentinel.next = sentinel.next.next;
+        sentinel.next.prev = sentinel;
+        size -= 1;
+        return removed.item;
     }
 
     public Item removeLast() {
+        if (size == 0) return null;
+
         Node removed = sentinel.prev;
         sentinel.prev = sentinel.prev.prev;
         sentinel.prev.next = sentinel;
