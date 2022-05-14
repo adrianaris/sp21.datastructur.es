@@ -43,6 +43,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
                      0,
                      nextLast - nextFirst + 1);
          } else {
+             if (nextFirst == items.length - 1) nextFirst = -1;
              System.arraycopy(items,
                      nextFirst + 1,
                      newItems,
