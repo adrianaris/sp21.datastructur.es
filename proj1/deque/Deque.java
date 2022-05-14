@@ -8,8 +8,8 @@ public interface Deque<Item> {
     public boolean isEmpty();
     public int size();
     public void printDeque();
-    public Item shift();
-    public Item pop();
+    public Item removeFirst();
+    public Item removeLast();
     public Item get(int index);
 //  public Iterator<Item> iterator();
     public boolean equals(Object o);

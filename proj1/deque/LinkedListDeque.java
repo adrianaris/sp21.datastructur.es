@@ -56,7 +56,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         size += 1;
     }
 
-    public Item shift() {
+    public Item removeFirst() {
        Node removed = sentinel.next;
        sentinel.next = sentinel.next.next;
        sentinel.next.prev = sentinel;
@@ -64,7 +64,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
        return removed.item;
     }
 
-    public Item pop() {
+    public Item removeLast() {
         Node removed = sentinel.prev;
         sentinel.prev = sentinel.prev.prev;
         sentinel.prev.next = sentinel;
@@ -182,8 +182,8 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         LD.addLast(2);
         LD.addLast(3);
         LD.addLast(4);
-        int shift = LD.shift();
-        int pop = LD.pop();
+        int shift = LD.removeFirst();
+        int pop = LD.removeLast();
         int got = LD.get(2);
         int gotR = LD.getRecursive(2);
         System.out.println("get: " + got + " | getR: " + gotR);

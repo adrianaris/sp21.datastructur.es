@@ -105,7 +105,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
          }
      }
 
-     public Item pop() {
+     public Item removeLast() {
          if (size - 1 < items.length / 4) {
              resize((int) (size * 1.5));
          }
@@ -123,7 +123,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
          return toRemove;
      }
 
-     public Item shift() {
+     public Item removeFirst() {
          if (size - 1 < items.length / 4) {
              resize((int) (size * 1.5));
          }
@@ -203,20 +203,20 @@ public class ArrayDeque<Item> implements Deque<Item> {
          for (int i = -4; i > -14; i--) {
              aL.addFirst(i);
          }
-         aL.pop();
-         aL.shift();
-         aL.shift();
-         aL.shift();
-         aL.shift();
-         aL.shift();
+         aL.removeLast();
+         aL.removeFirst();
+         aL.removeFirst();
+         aL.removeFirst();
+         aL.removeFirst();
+         aL.removeFirst();
          aL.printDeque();
-         aL.shift();
-         aL.shift();
-         aL.shift();
-         aL.shift();
-         aL.shift();
-         aL.shift();
-         aL.shift();
-         aL.shift();
+         aL.removeFirst();
+         aL.removeFirst();
+         aL.removeFirst();
+         aL.removeFirst();
+         aL.removeFirst();
+         aL.removeFirst();
+         aL.removeFirst();
+         aL.removeFirst();
      }
 }
