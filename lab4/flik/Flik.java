@@ -8,6 +8,8 @@ public class Flik {
      *  @param b Value 2
      *  @return Whether a and b are the same */
     public static boolean isSameNumber(Integer a, Integer b) {
-        return a == b;
+        // Apparently for values bigger than 127 Integer class returns a new object
+        // so, basically we have to different references and that's why "==" doesn't work
+        return a.equals(b);
     }
 }
