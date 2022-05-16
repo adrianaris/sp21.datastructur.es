@@ -155,7 +155,9 @@ public class LinkedListDeque<Item> implements Deque<Item> {
 //        return;
 //    }
     public boolean equals(Object o) {
-        if (o instanceof LinkedListDeque && o.hashCode() == this.hashCode()) {
+        if (o == null) return false;
+        if (o == this) return true;
+        if (o.getClass() == this.getClass() && o.hashCode() == this.hashCode()) {
             return true;
         }
         return false;
@@ -180,7 +182,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
     public static void main(String[] args) {
         LinkedListDeque<Integer> LD = new LinkedListDeque(1);
         LinkedListDeque<String> LDs = new LinkedListDeque("s");
-        LinkedListDeque<String> LDt = new LinkedListDeque("r");
+        LinkedListDeque<String> LDt = new LinkedListDeque("s");
         LD.addFirst(0);
         LD.addFirst(-1);
         LD.addLast(2);

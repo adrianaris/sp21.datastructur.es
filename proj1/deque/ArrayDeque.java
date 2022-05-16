@@ -163,8 +163,11 @@ public class ArrayDeque<Item> implements Deque<Item> {
          System.out.print("\n");
      }
 
+    @Override
     public boolean equals(Object o) {
-        if (o instanceof ArrayDeque && o.hashCode() == this.hashCode()) {
+        if (o == null) return false;
+        if (o == this) return true;
+        if (o.getClass() == this.getClass() && o.hashCode() == this.hashCode()) {
             return true;
         }
         return false;
@@ -174,6 +177,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
      * According to the style sheet I have to implement this
      * because I implement equals() above
      */
+    @Override
     public int hashCode() {
         int ListHash = 0;
         for (int i = 0; i < size; i++) {
@@ -183,18 +187,20 @@ public class ArrayDeque<Item> implements Deque<Item> {
                 ListHash += items[nextFirst + 1 + i - items.length].hashCode();
             }
         }
-        int result = 37;
+        int result = 31;
         result = result + size + ListHash;
         return result;
     }
 
      public static void main(String[] args) {
+         LinkedListDeque<Integer> LLD = new LinkedListDeque<>();
+         LLD.addLast(1);
          ArrayDeque<Integer> aL = new ArrayDeque();
          ArrayDeque<Integer> aH = new ArrayDeque();
          aH.addFirst(1);
          System.out.println("size " + aL.size);
          aL.addFirst(1);
-         System.out.println(aL.equals(aH));
+         System.out.println(aL.equals(LLD));
          aL.addFirst(0);
          aL.addLast(2);
          aL.addLast(3);
