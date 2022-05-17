@@ -1,12 +1,12 @@
-package timingtest;
+package TimingTests;
 import edu.princeton.cs.algs4.Stopwatch;
-//import javafx.scene.paint.Stop;
+import deque.LinkedListDeque;
 
 /**
  * Created by hug.
  */
-public class TimeAList {
-    private static void printTimingTable(AList<Integer> Ns, AList<Double> times, AList<Integer> opCounts) {
+public class TimeLLDeque {
+    private static void printTimingTable(LinkedListDeque<Integer> Ns, LinkedListDeque<Double> times, LinkedListDeque<Integer> opCounts) {
         System.out.printf("%12s %12s %12s %12s\n", "N", "time (s)", "# ops", "microsec/op");
         System.out.printf("------------------------------------------------------------\n");
         for (int i = 0; i < Ns.size(); i += 1) {
@@ -19,26 +19,31 @@ public class TimeAList {
     }
 
     public static void main(String[] args) {
-        timeAListConstruction();
+        timeGetLast();
     }
 
-    public static void timeAListConstruction() {
-        AList<Integer> aList = new AList();
+    public static void timeGetLast() {
+        LinkedListDeque LLD = new LinkedListDeque();
 
-        AList<Integer> Ns = new AList();
-        AList<Double> times = new AList();
-        AList<Integer> opCounts = new AList();
+        LinkedListDeque<Integer> Ns = new LinkedListDeque();
+        LinkedListDeque<Double> times = new LinkedListDeque();
+        LinkedListDeque<Integer> opCounts = new LinkedListDeque();
         int powerOfTwo = 7;
+        int M = 10000;
         for (int i = 0; i <= powerOfTwo; i+=1) {
             int numberOfItems = (int)Math.pow(2, i) * 1000;
-            Stopwatch sw = new Stopwatch();
             for (int j = 0; j < numberOfItems; j+=1) {
-                aList.addLast(j);
+                LLD.addFirst(j);
+            }
+
+            Stopwatch sw = new Stopwatch();
+            for (int j = 0; j < M; j+=1){
+                LLD.get(LLD.size() / 2);
             }
             double time = sw.elapsedTime();
             times.addLast(time);
             Ns.addLast(numberOfItems);
-            opCounts.addLast(numberOfItems);
+            opCounts.addLast(M);
         }
 
         printTimingTable(Ns, times, opCounts);

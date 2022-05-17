@@ -1,4 +1,4 @@
-package deque;
+package RandoTests;
 
 import java.util.LinkedList;
 

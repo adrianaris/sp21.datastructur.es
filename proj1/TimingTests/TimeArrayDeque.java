@@ -1,12 +1,12 @@
-package timingtest;
+package TimingTests;
 import edu.princeton.cs.algs4.Stopwatch;
-//import javafx.scene.paint.Stop;
+import deque.ArrayDeque;
 
 /**
  * Created by hug.
  */
-public class TimeAList {
-    private static void printTimingTable(AList<Integer> Ns, AList<Double> times, AList<Integer> opCounts) {
+public class TimeArrayDeque {
+    private static void printTimingTable(ArrayDeque<Integer> Ns, ArrayDeque<Double> times, ArrayDeque<Integer> opCounts) {
         System.out.printf("%12s %12s %12s %12s\n", "N", "time (s)", "# ops", "microsec/op");
         System.out.printf("------------------------------------------------------------\n");
         for (int i = 0; i < Ns.size(); i += 1) {
@@ -19,15 +19,15 @@ public class TimeAList {
     }
 
     public static void main(String[] args) {
-        timeAListConstruction();
+        timeArrayDequeConstruction();
     }
 
-    public static void timeAListConstruction() {
-        AList<Integer> aList = new AList();
+    public static void timeArrayDequeConstruction() {
+        ArrayDeque<Integer> aList = new ArrayDeque();
 
-        AList<Integer> Ns = new AList();
-        AList<Double> times = new AList();
-        AList<Integer> opCounts = new AList();
+        ArrayDeque<Integer> Ns = new ArrayDeque();
+        ArrayDeque<Double> times = new ArrayDeque();
+        ArrayDeque<Integer> opCounts = new ArrayDeque();
         int powerOfTwo = 7;
         for (int i = 0; i <= powerOfTwo; i+=1) {
             int numberOfItems = (int)Math.pow(2, i) * 1000;

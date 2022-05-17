@@ -1,14 +1,16 @@
-package deque;
+package RandoTests;
 
 import static org.junit.Assert.*;
+
+import deque.ArrayDeque;
 import org.junit.Test;
 import edu.princeton.cs.algs4.StdRandom;
 
-public class LinkedListDequeRandoTests {
+public class ArrayDequeRandoTests {
     @Test
     public static void test0() {
-        //randomly call LinkedListDeque and ArrayDequeSolution methods.
-        LinkedListDeque<Integer> LLD = new LinkedListDeque();
+        //randomly call ArrayDeque and ArrayDequeSolution methods.
+        ArrayDeque<Integer> SAD = new ArrayDeque();
         ArrayDequeSolution<Integer> ADS = new ArrayDequeSolution();
 
         int N = 5000;
@@ -19,7 +21,7 @@ public class LinkedListDequeRandoTests {
             if (operationNumber == 0) {
                 // addFirst
                 Integer randValue = StdRandom.uniform(-100, 100);
-                LLD.addFirst(randValue);
+                SAD.addFirst(randValue);
                 methodCallsList.append("addFirst(")
                         .append(randValue)
                         .append(")")
@@ -28,7 +30,7 @@ public class LinkedListDequeRandoTests {
             } else if (operationNumber == 1) {
                 // addLast
                 Integer randValue = StdRandom.uniform(-100, 100);
-                LLD.addLast(randValue);
+                SAD.addLast(randValue);
                 methodCallsList.append("addLast(")
                         .append(randValue)
                         .append(")")
@@ -37,7 +39,7 @@ public class LinkedListDequeRandoTests {
             } else if (operationNumber == 2) {
                 // removeFirst
                 if (ADS.size() > 0) {
-                    Integer sadFirst = LLD.removeFirst();
+                    Integer sadFirst = SAD.removeFirst();
                     methodCallsList.append("removeFirst() \n");
                     Integer adsFirst = ADS.removeFirst();
                     assertEquals(methodCallsList.toString(), sadFirst, adsFirst);
@@ -45,7 +47,7 @@ public class LinkedListDequeRandoTests {
             } else if (operationNumber == 3) {
                 // removeLast
                 if (ADS.size() > 0) {
-                    Integer sadLast = LLD.removeLast();
+                    Integer sadLast = SAD.removeLast();
                     methodCallsList.append("removeLast() \n");
                     Integer adsLast = ADS.removeLast();
                     assertEquals(methodCallsList.toString(), sadLast, adsLast);

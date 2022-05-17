@@ -1,5 +1,6 @@
-package deque;
+package RandoTests;
 
+        import deque.ArrayDeque;
         import org.junit.Test;
 
         import static org.junit.Assert.*;

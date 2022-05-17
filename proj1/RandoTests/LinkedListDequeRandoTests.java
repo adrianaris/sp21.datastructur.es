@@ -1,14 +1,17 @@
-package deque;
+package RandoTests;
 
 import static org.junit.Assert.*;
+
+import RandoTests.ArrayDequeSolution;
+import deque.LinkedListDeque;
 import org.junit.Test;
 import edu.princeton.cs.algs4.StdRandom;
 
-public class ArrayDequeRandoTests {
+public class LinkedListDequeRandoTests {
     @Test
     public static void test0() {
-        //randomly call ArrayDeque and ArrayDequeSolution methods.
-        ArrayDeque<Integer> SAD = new ArrayDeque();
+        //randomly call LinkedListDeque and ArrayDequeSolution methods.
+        LinkedListDeque<Integer> LLD = new LinkedListDeque();
         ArrayDequeSolution<Integer> ADS = new ArrayDequeSolution();
 
         int N = 5000;
@@ -19,7 +22,7 @@ public class ArrayDequeRandoTests {
             if (operationNumber == 0) {
                 // addFirst
                 Integer randValue = StdRandom.uniform(-100, 100);
-                SAD.addFirst(randValue);
+                LLD.addFirst(randValue);
                 methodCallsList.append("addFirst(")
                         .append(randValue)
                         .append(")")
@@ -28,7 +31,7 @@ public class ArrayDequeRandoTests {
             } else if (operationNumber == 1) {
                 // addLast
                 Integer randValue = StdRandom.uniform(-100, 100);
-                SAD.addLast(randValue);
+                LLD.addLast(randValue);
                 methodCallsList.append("addLast(")
                         .append(randValue)
                         .append(")")
@@ -37,7 +40,7 @@ public class ArrayDequeRandoTests {
             } else if (operationNumber == 2) {
                 // removeFirst
                 if (ADS.size() > 0) {
-                    Integer sadFirst = SAD.removeFirst();
+                    Integer sadFirst = LLD.removeFirst();
                     methodCallsList.append("removeFirst() \n");
                     Integer adsFirst = ADS.removeFirst();
                     assertEquals(methodCallsList.toString(), sadFirst, adsFirst);
@@ -45,7 +48,7 @@ public class ArrayDequeRandoTests {
             } else if (operationNumber == 3) {
                 // removeLast
                 if (ADS.size() > 0) {
-                    Integer sadLast = SAD.removeLast();
+                    Integer sadLast = LLD.removeLast();
                     methodCallsList.append("removeLast() \n");
                     Integer adsLast = ADS.removeLast();
                     assertEquals(methodCallsList.toString(), sadLast, adsLast);
