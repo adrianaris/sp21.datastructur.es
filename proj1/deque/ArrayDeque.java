@@ -171,15 +171,18 @@ public class ArrayDeque<Item> implements Deque<Item> {
 
     private class ArrayDequeIterator implements Iterator<Item> {
          private int wizPos;
+         private int iteration;
          public ArrayDequeIterator() {
              wizPos = nextFirst + 1 == items.length ? 0 : nextFirst + 1;
+             iteration = 0;
          }
          public boolean hasNext() {
-             return wizPos != nextLast;
+             return iteration != size;
          }
          public Item next() {
             Item returnItem = items[wizPos];
             wizPos = wizPos + 1 == items.length ? 0 : wizPos + 1;
+            iteration++;
             return returnItem;
          }
     }

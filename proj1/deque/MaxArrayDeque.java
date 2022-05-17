@@ -44,8 +44,8 @@ public class MaxArrayDeque<Item> extends ArrayDeque<Item>{
     public static void main(String[] args) {
         Comparator<String> c = Comparator.naturalOrder();
 
-        MaxArrayDeque<String> smad = new MaxArrayDeque<>(null);
-        String[] string = {"f", "g", "h", "r", "z", "a"};
+        MaxArrayDeque<String> smad = new MaxArrayDeque<String>(null);
+        String[] string = {"f", "g", "h", "r", "zbd", "a", "zadddd", "zgd"};
         for (int i = 0; i < string.length; i++) {
             smad.addFirst(string[i]);
         }
