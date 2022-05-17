@@ -2,37 +2,56 @@ package deque;
 
 import java.util.Comparator;
 
-// we need the iterator so we should first implement that
-
-public class MaxArrayDeque<Item> extends ArrayDeque{
-    private Comparator<Item> comparator;
-    private Comparator<Item> defaultComparator = new Comparator<Item>() {
-        @Override
-        public int compare(Item o1, Item o2) {
-            return 0;
-        }
-    };
+public class MaxArrayDeque<Item> extends ArrayDeque<Item>{
+    private Comparator<Item> madc;
 
     public MaxArrayDeque(Comparator<Item> c) {
         super();
-        comparator = c;
+        madc = c;
     }
 
     public Item max() {
         if (this.size() == 0) return null;
-        return null;
+        if (madc == null) {
+           return max(getComparator());
+        }
+
+        return max(madc);
     }
 
     public Item max(Comparator<Item> c) {
-        return null;
+        Item result = this.getLast();
+
+        for (Item i : this) {
+            if (c.compare(result, i) < 0) {
+                result = i;
+            }
+        }
+
+        return result;
+    }
+
+    private class MaxDequeComparator implements Comparator<Item>{
+        public int compare(Item a, Item b) {
+            return a.hashCode() - b.hashCode();
+        }
+    }
+
+    public Comparator<Item> getComparator() {
+        return new MaxDequeComparator();
     }
 
     public static void main(String[] args) {
-        MaxArrayDeque<String> MD = new MaxArrayDeque<>(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return 0;
-            }
-        });
+        Comparator<String> c = Comparator.naturalOrder();
+
+        MaxArrayDeque<String> smad = new MaxArrayDeque<>(null);
+        String[] string = {"f", "g", "h", "r", "z", "a"};
+        for (int i = 0; i < string.length; i++) {
+            smad.addFirst(string[i]);
+        }
+
+        smad.printDeque();
+        String max = smad.max();
+        System.out.println(max);
     }
 }

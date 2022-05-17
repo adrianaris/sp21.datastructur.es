@@ -177,7 +177,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
 
     /**
      * According to the style sheet I have to implement this
-     * because I implement equals() above
+     * because I implement equals() above.
      */
     public int hashCode() {
         Node tmp = sentinel;
