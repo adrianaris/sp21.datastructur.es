@@ -1,5 +1,7 @@
 package deque;
 
+import java.util.Iterator;
+
 public class ArrayDeque<Item> implements Deque<Item> {
      private Item[] items;
      private int size;
@@ -163,6 +165,25 @@ public class ArrayDeque<Item> implements Deque<Item> {
          System.out.print("\n");
      }
 
+    public Iterator<Item> iterator() {
+        return new ArrayDequeIterator();
+    }
+
+    private class ArrayDequeIterator implements Iterator<Item> {
+         private int wizPos;
+         public ArrayDequeIterator() {
+             wizPos = nextFirst + 1 == items.length ? 0 : nextFirst + 1;
+         }
+         public boolean hasNext() {
+             return wizPos != nextLast;
+         }
+         public Item next() {
+            Item returnItem = items[wizPos];
+            wizPos = wizPos + 1 == items.length ? 0 : wizPos + 1;
+            return returnItem;
+         }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null) return false;
@@ -212,25 +233,12 @@ public class ArrayDeque<Item> implements Deque<Item> {
          for (int i = -4; i > -14; i--) {
              aL.addFirst(i);
          }
-         aL.removeLast();
-         aL.removeFirst();
-         aL.removeFirst();
-         aL.removeFirst();
-         aL.removeFirst();
-         aL.removeFirst();
-         aL.printDeque();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
-         aL.removeLast();
+
+         System.out.println("size " + aL.size());
+
+         for (int i : aL) {
+             System.out.println(i);
+         }
+
      }
 }

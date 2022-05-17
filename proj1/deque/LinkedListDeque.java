@@ -148,12 +148,24 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         }
     }
 
-    /**
-     * To be developed after lecture 11
-     */
-//    public Iterator<Item> iterator() {
-//        return;
-//    }
+    public Iterator<Item> iterator() {
+        return new LLDequeIterator();
+    }
+
+    private class LLDequeIterator implements Iterator<Item> {
+        private Node wizPos;
+        public LLDequeIterator() {
+            wizPos = sentinel.next;
+        }
+        public boolean hasNext() {
+            return wizPos != sentinel;
+        }
+        public Item next() {
+            Item returnItem = wizPos.item;
+            wizPos = wizPos.next;
+            return returnItem;
+        }
+    }
     public boolean equals(Object o) {
         if (o == null) return false;
         if (o == this) return true;
@@ -199,5 +211,10 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         LD.printDeque();
         System.out.println("LD: " + LD.hashCode() + " || LDs: " + LDs.hashCode() + " || LDt: " + LDt.hashCode());
         System.out.println(LDt.equals(LDs));
+        System.out.println();
+
+        for (int i : LD) {
+            System.out.println(i);
+        }
     }
 }
