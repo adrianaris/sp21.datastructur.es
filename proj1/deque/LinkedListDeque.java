@@ -1,17 +1,17 @@
 package deque;
 import java.util.Iterator;
 
-public class LinkedListDeque<Item> implements Deque<Item> {
+public class LinkedListDeque<T> implements Deque<T> {
     /**
      * At the teacher recommendation I decided to write a DLList
      * with one sentinel keeping track of both head and tail.
      */
     private class Node {
         private Node prev;
-        private Item item;
+        private T item;
         private Node next;
 
-        Node(Item i) {
+        Node(T i) {
             item = i;
             prev = this;
             next = prev;
@@ -22,13 +22,13 @@ public class LinkedListDeque<Item> implements Deque<Item> {
     private int size;
 
     public LinkedListDeque() {
-        sentinel = new Node((Item) new Object());
+        sentinel = new Node((T) new Object());
         size = 0;
     }
 
-    public LinkedListDeque(Item i) {
+    public LinkedListDeque(T i) {
         Node temp = new Node(i);
-        sentinel = new Node((Item) new Object());
+        sentinel = new Node((T) new Object());
         temp.next = sentinel;
         temp.prev = sentinel;
         sentinel.next = temp;
@@ -37,7 +37,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
     }
 
     @Override
-    public void addFirst(Item i) {
+    public void addFirst(T i) {
         Node temp = new Node(i);
         temp.next = sentinel.next;
         temp.prev = sentinel;
@@ -47,7 +47,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
     }
 
     @Override
-    public void addLast(Item i) {
+    public void addLast(T i) {
         Node temp = new Node(i);
         temp.next = sentinel;
         temp.prev = sentinel.prev;
@@ -57,7 +57,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
     }
 
     @Override
-    public Item removeFirst() {
+    public T removeFirst() {
         if (size == 0) {
             return null;
         }
@@ -70,7 +70,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
     }
 
     @Override
-    public Item removeLast() {
+    public T removeLast() {
         if (size == 0) {
             return null;
         }
@@ -106,7 +106,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
      *  and from the end if index is closer to the end.
      */
     @Override
-    public Item get(int index) {
+    public T get(int index) {
         if (index >= size || index < 0) {
             throw new Error("Index out of bounds!!!");
         }
@@ -130,7 +130,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         }
     }
 
-    public Item getRecursive(int index) {
+    public T getRecursive(int index) {
         return getRecursive(index, sentinel);
     }
 
@@ -141,7 +141,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
      *     if index is nearer to the end it starts from the end.
      * It receives sentinel as argument.
      */
-    private Item getRecursive(int index, Node list) {
+    private T getRecursive(int index, Node list) {
         if (index == 0) {
             return list.next.item;
         } else if (index == size - 1) {
@@ -155,11 +155,11 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         }
     }
 
-    public Iterator<Item> iterator() {
+    public Iterator<T> iterator() {
         return new LLDequeIterator();
     }
 
-    private class LLDequeIterator implements Iterator<Item> {
+    private class LLDequeIterator implements Iterator<T> {
         private Node wizPos;
         LLDequeIterator() {
             wizPos = sentinel.next;
@@ -167,10 +167,10 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         public boolean hasNext() {
             return wizPos != sentinel;
         }
-        public Item next() {
-            Item returnItem = wizPos.item;
+        public T next() {
+            T returnT = wizPos.item;
             wizPos = wizPos.next;
-            return returnItem;
+            return returnT;
         }
     }
 
@@ -178,9 +178,6 @@ public class LinkedListDeque<Item> implements Deque<Item> {
     public boolean equals(Object o) {
         if (o == null) {
             return false;
-        }
-        if (o == this) {
-            return true;
         }
         if (o.getClass() == this.getClass() && o.hashCode() == this.hashCode()) {
             return true;

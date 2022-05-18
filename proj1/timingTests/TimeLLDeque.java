@@ -5,7 +5,7 @@ import deque.LinkedListDeque;
 /**
  * Created by hug.
  */
-public class Timelldeque {
+public class TimeLLDeque {
     private static void printTimingTable(LinkedListDeque<Integer> nS,
                                          LinkedListDeque<Double> times,
                                          LinkedListDeque<Integer> opCounts) {
