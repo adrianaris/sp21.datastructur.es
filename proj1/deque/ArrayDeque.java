@@ -146,11 +146,6 @@ public class ArrayDeque<Item> implements Deque<Item> {
          return toRemove;
      }
 
-     public boolean isEmpty() {
-         if (size == 0) return true;
-         return false;
-     }
-
      public void printDeque() {
          StringBuilder listItems = new StringBuilder(size);
          for (int i = 0; i < size; i++) {

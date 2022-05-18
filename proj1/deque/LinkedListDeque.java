@@ -76,11 +76,6 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         return removed.item;
     }
 
-    public boolean isEmpty() {
-        if (sentinel.next == null || size == 0) return true;
-        return false;
-    }
-
     public int size() {
         return size;
     }
@@ -216,5 +211,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         for (int i : LD) {
             System.out.println(i);
         }
+
+        System.out.println(LD.isEmpty());
     }
 }
