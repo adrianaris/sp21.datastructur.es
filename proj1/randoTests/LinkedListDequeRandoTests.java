@@ -1,8 +1,7 @@
-package RandoTests;
+package randoTests;
 
 import static org.junit.Assert.*;
 
-import RandoTests.ArrayDequeSolution;
 import deque.LinkedListDeque;
 import org.junit.Test;
 import edu.princeton.cs.algs4.StdRandom;
@@ -11,46 +10,47 @@ public class LinkedListDequeRandoTests {
     @Test
     public static void test0() {
         //randomly call LinkedListDeque and ArrayDequeSolution methods.
-        LinkedListDeque<Integer> LLD = new LinkedListDeque();
-        ArrayDequeSolution<Integer> ADS = new ArrayDequeSolution();
+        LinkedListDeque<Integer> lld = new LinkedListDeque();
+        ArrayDequeSolution<Integer> ads = new ArrayDequeSolution();
 
-        int N = 5000;
-        StringBuilder methodCallsList = new StringBuilder("\nSequence of method calls until failure:\n");
+        int N = 50000;
+        StringBuilder methodCallsList =
+                new StringBuilder("\nSequence of method calls until failure:\n");
 
         for (int i = 0; i < N; i++) {
             int operationNumber = StdRandom.uniform(0, 3);
             if (operationNumber == 0) {
                 // addFirst
                 Integer randValue = StdRandom.uniform(-100, 100);
-                LLD.addFirst(randValue);
+                lld.addFirst(randValue);
                 methodCallsList.append("addFirst(")
                         .append(randValue)
                         .append(")")
                         .append("\n");
-                ADS.addFirst(randValue);
+                ads.addFirst(randValue);
             } else if (operationNumber == 1) {
                 // addLast
                 Integer randValue = StdRandom.uniform(-100, 100);
-                LLD.addLast(randValue);
+                lld.addLast(randValue);
                 methodCallsList.append("addLast(")
                         .append(randValue)
                         .append(")")
                         .append("\n");
-                ADS.addLast(randValue);
+                ads.addLast(randValue);
             } else if (operationNumber == 2) {
                 // removeFirst
-                if (ADS.size() > 0) {
-                    Integer sadFirst = LLD.removeFirst();
+                if (ads.size() > 0) {
+                    Integer sadFirst = lld.removeFirst();
                     methodCallsList.append("removeFirst() \n");
-                    Integer adsFirst = ADS.removeFirst();
+                    Integer adsFirst = ads.removeFirst();
                     assertEquals(methodCallsList.toString(), sadFirst, adsFirst);
                 }
             } else if (operationNumber == 3) {
                 // removeLast
-                if (ADS.size() > 0) {
-                    Integer sadLast = LLD.removeLast();
+                if (ads.size() > 0) {
+                    Integer sadLast = lld.removeLast();
                     methodCallsList.append("removeLast() \n");
-                    Integer adsLast = ADS.removeLast();
+                    Integer adsLast = ads.removeLast();
                     assertEquals(methodCallsList.toString(), sadLast, adsLast);
                 }
             }

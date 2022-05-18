@@ -1,4 +1,4 @@
-package RandoTests;
+package randoTests;
 
         import deque.ArrayDeque;
         import org.junit.Test;

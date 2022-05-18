@@ -1,4 +1,4 @@
-package RandoTests;
+package randoTests;
 
 import java.util.LinkedList;
 

@@ -1,6 +1,4 @@
 package deque;
-
-import java.io.IOException;
 import java.util.Iterator;
 
 public class LinkedListDeque<Item> implements Deque<Item> {
@@ -9,9 +7,9 @@ public class LinkedListDeque<Item> implements Deque<Item> {
      * with one sentinel keeping track of both head and tail.
      */
     private class Node {
-        public Node prev;
-        public Item item;
-        public Node next;
+        private Node prev;
+        private Item item;
+        private Node next;
 
         public Node(Item i) {
             item = i;
@@ -38,6 +36,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         size = 1;
     }
 
+    @Override
     public void addFirst(Item i) {
         Node temp = new Node(i);
         temp.next = sentinel.next;
@@ -47,6 +46,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         size += 1;
     }
 
+    @Override
     public void addLast(Item i) {
         Node temp = new Node(i);
         temp.next = sentinel;
@@ -56,8 +56,11 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         size += 1;
     }
 
+    @Override
     public Item removeFirst() {
-        if (size == 0) return null;
+        if (size == 0) {
+            return null;
+        }
 
         Node removed = sentinel.next;
         sentinel.next = sentinel.next.next;
@@ -66,8 +69,11 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         return removed.item;
     }
 
+    @Override
     public Item removeLast() {
-        if (size == 0) return null;
+        if (size == 0) {
+            return null;
+        }
 
         Node removed = sentinel.prev;
         sentinel.prev = sentinel.prev.prev;
@@ -76,9 +82,12 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         return removed.item;
     }
 
+    @Override
     public int size() {
         return size;
     }
+
+    @Override
     public void printDeque() {
         Node L = sentinel.next;
         StringBuilder listItems = new StringBuilder(L.item.toString());
@@ -96,8 +105,11 @@ public class LinkedListDeque<Item> implements Deque<Item> {
      *  index is closer to the beginning of the list
      *  and from the end if index is closer to the end.
      */
+    @Override
     public Item get(int index) {
-        if (index >= size || index < 0) throw new Error("Index out of bounds!!!");
+        if (index >= size || index < 0) {
+            throw new Error("Index out of bounds!!!");
+        }
         if (index < size / 2) {
             Node L = sentinel.next;
             int position = 0;
@@ -143,6 +155,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         }
     }
 
+    @Override
     public Iterator<Item> iterator() {
         return new LLDequeIterator();
     }
@@ -161,9 +174,15 @@ public class LinkedListDeque<Item> implements Deque<Item> {
             return returnItem;
         }
     }
+
+    @Override
     public boolean equals(Object o) {
-        if (o == null) return false;
-        if (o == this) return true;
+        if (o == null) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
         if (o.getClass() == this.getClass() && o.hashCode() == this.hashCode()) {
             return true;
         }
@@ -174,6 +193,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
      * According to the style sheet I have to implement this
      * because I implement equals() above.
      */
+    @Override
     public int hashCode() {
         Node tmp = sentinel;
         int ListHash = 0;
@@ -184,34 +204,5 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         int result = 31;
         result = result + size + ListHash;
         return result;
-    }
-
-    public static void main(String[] args) {
-        LinkedListDeque<Integer> LD = new LinkedListDeque(1);
-        LinkedListDeque<String> LDs = new LinkedListDeque("s");
-        LinkedListDeque<String> LDt = new LinkedListDeque("s");
-        LD.addFirst(0);
-        LD.addFirst(-1);
-        LD.addLast(2);
-        LD.addLast(3);
-        LD.addLast(4);
-        int shift = LD.removeFirst();
-        int pop = LD.removeLast();
-        int got = LD.get(2);
-        int gotR = LD.getRecursive(2);
-        System.out.println("get: " + got + " | getR: " + gotR);
-        System.out.println("shift: " + shift);
-        System.out.println("pop: " + pop);
-        System.out.println("size " + LD.size());
-        LD.printDeque();
-        System.out.println("LD: " + LD.hashCode() + " || LDs: " + LDs.hashCode() + " || LDt: " + LDt.hashCode());
-        System.out.println(LDt.equals(LDs));
-        System.out.println();
-
-        for (int i : LD) {
-            System.out.println(i);
-        }
-
-        System.out.println(LD.isEmpty());
     }
 }

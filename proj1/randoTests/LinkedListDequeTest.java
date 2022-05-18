@@ -1,4 +1,4 @@
-package RandoTests;
+package randoTests;
 
 import deque.LinkedListDeque;
 import org.junit.Test;
