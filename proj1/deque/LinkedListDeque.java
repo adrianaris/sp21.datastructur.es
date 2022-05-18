@@ -11,7 +11,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         private Item item;
         private Node next;
 
-        public Node(Item i) {
+        Node(Item i) {
             item = i;
             prev = this;
             next = prev;
@@ -155,14 +155,13 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         }
     }
 
-    @Override
     public Iterator<Item> iterator() {
         return new LLDequeIterator();
     }
 
     private class LLDequeIterator implements Iterator<Item> {
         private Node wizPos;
-        public LLDequeIterator() {
+        LLDequeIterator() {
             wizPos = sentinel.next;
         }
         public boolean hasNext() {
@@ -196,13 +195,13 @@ public class LinkedListDeque<Item> implements Deque<Item> {
     @Override
     public int hashCode() {
         Node tmp = sentinel;
-        int ListHash = 0;
+        int listHash = 0;
         while (tmp.next != sentinel) {
             tmp = tmp.next;
-            ListHash += tmp.item.hashCode();
+            listHash += tmp.item.hashCode();
         }
         int result = 31;
-        result = result + size + ListHash;
+        result = result + size + listHash;
         return result;
     }
 }

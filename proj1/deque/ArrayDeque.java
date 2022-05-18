@@ -67,16 +67,16 @@ public class ArrayDeque<Item> implements Deque<Item> {
 
     @Override
     public void addFirst(Item i) {
-         if (size == items.length) {
-             resize(size * 2);
-         }
-         items[nextFirst] = i;
-         if (nextFirst - 1 < 0) {
-             nextFirst = items.length - 1;
-         } else {
-             nextFirst--;
-         }
-         size++;
+        if (size == items.length) {
+            resize(size * 2);
+        }
+        items[nextFirst] = i;
+        if (nextFirst - 1 < 0) {
+            nextFirst = items.length - 1;
+        } else {
+            nextFirst--;
+        }
+        size++;
     }
 
     @Override
@@ -142,14 +142,14 @@ public class ArrayDeque<Item> implements Deque<Item> {
 
     @Override
     public Item removeFirst() {
-        if(size == 0) {
+        if (size == 0) {
             return null;
         }
         if (size - 1 < items.length / 4 && size > 16) {
             resize((int) (size * 1.5));
         }
 
-        if (nextFirst + 1 > items.length -1) {
+        if (nextFirst + 1 > items.length - 1) {
             nextFirst = 0;
         } else {
             nextFirst++;
@@ -177,33 +177,36 @@ public class ArrayDeque<Item> implements Deque<Item> {
         System.out.print("\n");
     }
 
-    @Override
     public Iterator<Item> iterator() {
         return new ArrayDequeIterator();
     }
 
     private class ArrayDequeIterator implements Iterator<Item> {
-         private int wizPos;
-         private int iteration;
-         public ArrayDequeIterator() {
-             wizPos = nextFirst + 1 == items.length ? 0 : nextFirst + 1;
-             iteration = 0;
-         }
-         public boolean hasNext() {
-             return iteration != size;
-         }
-         public Item next() {
-            Item returnItem = items[wizPos];
-            wizPos = wizPos + 1 == items.length ? 0 : wizPos + 1;
-            iteration++;
-            return returnItem;
-         }
+        private int wizPos;
+        private int iteration;
+        public ArrayDequeIterator() {
+            wizPos = nextFirst + 1 == items.length ? 0 : nextFirst + 1;
+            iteration = 0;
+        }
+        public boolean hasNext() {
+            return iteration != size;
+        }
+        public Item next() {
+           Item returnItem = items[wizPos];
+           wizPos = wizPos + 1 == items.length ? 0 : wizPos + 1;
+           iteration++;
+           return returnItem;
+        }
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) return false;
-        if (o == this) return true;
+        if (o == null) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
         if (o.getClass() == this.getClass() && o.hashCode() == this.hashCode()) {
             return true;
         }
@@ -216,16 +219,16 @@ public class ArrayDeque<Item> implements Deque<Item> {
      */
     @Override
     public int hashCode() {
-        int ListHash = 0;
+        int listHash = 0;
         for (int i = 0; i < size; i++) {
             if (nextFirst + 1 + i < items.length) {
-                ListHash += items[nextFirst + 1 + i].hashCode();
+                listHash += items[nextFirst + 1 + i].hashCode();
             } else {
-                ListHash += items[nextFirst + 1 + i - items.length].hashCode();
+                listHash += items[nextFirst + 1 + i - items.length].hashCode();
             }
         }
         int result = 31;
-        result = result + size + ListHash;
+        result = result + size + listHash;
         return result;
     }
 }

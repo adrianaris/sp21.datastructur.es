@@ -5,7 +5,7 @@ import deque.LinkedListDeque;
 /**
  * Created by hug.
  */
-public class TimeLLDeque {
+public class Timelldeque {
     private static void printTimingTable(LinkedListDeque<Integer> nS,
                                          LinkedListDeque<Double> times,
                                          LinkedListDeque<Integer> opCounts) {
@@ -25,7 +25,7 @@ public class TimeLLDeque {
     }
 
     public static void timeGetLast() {
-        LinkedListDeque LLD = new LinkedListDeque();
+        LinkedListDeque lld = new LinkedListDeque();
 
         LinkedListDeque<Integer> nS = new LinkedListDeque();
         LinkedListDeque<Double> times = new LinkedListDeque();
@@ -33,14 +33,14 @@ public class TimeLLDeque {
         int powerOfTwo = 7;
         int M = 10000;
         for (int i = 0; i <= powerOfTwo; i++) {
-            int numberOfItems = (int)Math.pow(2, i) * 1000;
+            int numberOfItems = (int) Math.pow(2, i) * 1000;
             for (int j = 0; j < numberOfItems; j++) {
-                LLD.addFirst(j);
+                lld.addFirst(j);
             }
 
             Stopwatch sw = new Stopwatch();
             for (int j = 0; j < M; j++) {
-                LLD.get(LLD.size() / 2);
+                lld.get(lld.size() / 2);
             }
             double time = sw.elapsedTime();
             times.addLast(time);

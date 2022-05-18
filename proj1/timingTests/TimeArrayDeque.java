@@ -32,7 +32,7 @@ public class TimeArrayDeque {
         ArrayDeque<Integer> opCounts = new ArrayDeque();
         int powerOfTwo = 7;
         for (int i = 0; i <= powerOfTwo; i++) {
-            int numberOfItems = (int)Math.pow(2, i) * 1000;
+            int numberOfItems = (int) Math.pow(2, i) * 1000;
             Stopwatch sw = new Stopwatch();
             for (int j = 0; j < numberOfItems; j++) {
                 aList.addLast(j);
