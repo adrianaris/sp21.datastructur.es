@@ -3,15 +3,15 @@ package deque;
 import java.util.Comparator;
 import java.util.Iterator;
 
-public class MaxArrayDeque<Item> extends ArrayDeque<Item> {
-    private Comparator<Item> madc;
+public class MaxArrayDeque<T> extends ArrayDeque<T> {
+    private Comparator<T> madc;
 
-    public MaxArrayDeque(Comparator<Item> c) {
+    public MaxArrayDeque(Comparator<T> c) {
         super();
         madc = c;
     }
 
-    public Item max() {
+    public T max() {
         if (this.size() == 0) {
             return null;
         }
@@ -21,12 +21,12 @@ public class MaxArrayDeque<Item> extends ArrayDeque<Item> {
         return max(madc);
     }
 
-    public Item max(Comparator<Item> c) {
-        Item result = this.getLast();
-        Iterator<Item> iterator = iterator();
+    public T max(Comparator<T> c) {
+        T result = this.getLast();
+        Iterator<T> iterator = iterator();
 
         while (iterator.hasNext()) {
-            Item i = iterator.next();
+            T i = iterator.next();
             if (c.compare(result, i) < 0) {
                 result = i;
             }
@@ -35,13 +35,13 @@ public class MaxArrayDeque<Item> extends ArrayDeque<Item> {
         return result;
     }
 
-    private class MaxDequeComparator implements Comparator<Item> {
-        public int compare(Item a, Item b) {
+    private class MaxDequeComparator implements Comparator<T> {
+        public int compare(T a, T b) {
             return a.hashCode() - b.hashCode();
         }
     }
 
-    public Comparator<Item> getComparator() {
+    public Comparator<T> getComparator() {
         return new MaxDequeComparator();
     }
 }

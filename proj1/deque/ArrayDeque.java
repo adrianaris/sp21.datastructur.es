@@ -204,7 +204,7 @@ public class ArrayDeque<T> implements Deque<T> {
         if (o == null) {
             return false;
         }
-        if (o.getClass() == this.getClass() && o.hashCode() == this.hashCode()) {
+        if (o.hashCode() == this.hashCode()) {
             return true;
         }
         return false;
