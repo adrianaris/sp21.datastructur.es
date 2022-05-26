@@ -1,6 +1,8 @@
 package capers;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Paths;
 
 import static capers.Utils.*;
@@ -31,8 +33,11 @@ public class CapersRepository {
      *    - dogs/ -- folder containing all of the persistent data for dogs
      *    - story -- file containing the current story
      */
+
     public static void setupPersistence() {
-        // TODO
+        if (!CAPERS_FOLDER.exists()) {
+            CAPERS_FOLDER.mkdir();
+        }
     }
 
     /**
@@ -41,7 +46,15 @@ public class CapersRepository {
      * @param text String of the text to be appended to the story
      */
     public static void writeStory(String text) {
-        // TODO
+        File stories = Paths.get(CAPERS_FOLDER.getPath(), "stories.txt").toFile();
+
+        if (!stories.exists()) {
+            Utils.writeContents(stories, text);
+        } else {
+            StringBuilder savedStories = new StringBuilder(Utils.readContentsAsString(stories));
+            savedStories.append("\n").append(text);
+            Utils.writeContents(stories, savedStories.toString());
+        }
     }
 
     /**
@@ -50,7 +63,9 @@ public class CapersRepository {
      * Also prints out the dog's information using toString().
      */
     public static void makeDog(String name, String breed, int age) {
-        // TODO
+        Dog dog = new Dog(name, breed, age);
+        dog.saveDog();
+        System.out.println(dog.toString());
     }
 
     /**
@@ -60,6 +75,9 @@ public class CapersRepository {
      * @param name String name of the Dog whose birthday we're celebrating.
      */
     public static void celebrateBirthday(String name) {
-        // TODO
+        Dog dog = Dog.fromFile(name);
+        dog.haveBirthday();
+        System.out.println(dog.toString());
+        dog.saveDog();
     }
 }
