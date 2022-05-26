@@ -46,13 +46,15 @@ public class CapersRepository {
      * @param text String of the text to be appended to the story
      */
     public static void writeStory(String text) {
-        File stories = Paths.get(CAPERS_FOLDER.getPath(), "stories.txt").toFile();
+        File stories = Paths.get(CAPERS_FOLDER.getPath(), "story.txt").toFile();
 
         if (!stories.exists()) {
-            Utils.writeContents(stories, text);
+            Utils.writeContents(stories, text + "\n");
+            System.out.println(text);
         } else {
             StringBuilder savedStories = new StringBuilder(Utils.readContentsAsString(stories));
-            savedStories.append("\n").append(text);
+            savedStories.append(text).append("\n");
+            System.out.println(savedStories);
             Utils.writeContents(stories, savedStories.toString());
         }
     }
@@ -77,7 +79,6 @@ public class CapersRepository {
     public static void celebrateBirthday(String name) {
         Dog dog = Dog.fromFile(name);
         dog.haveBirthday();
-        System.out.println(dog.toString());
         dog.saveDog();
     }
 }

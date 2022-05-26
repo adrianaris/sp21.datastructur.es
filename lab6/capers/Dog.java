@@ -60,6 +60,9 @@ public class Dog implements Serializable{
      * Saves a dog to a file for future use.
      */
     public void saveDog() {
+        if (!DOG_FOLDER.exists()) {
+            DOG_FOLDER.mkdir();
+        }
         File f = Paths.get(DOG_FOLDER.getPath(), this.name).toFile();
         Utils.writeObject(f, this);
     }
