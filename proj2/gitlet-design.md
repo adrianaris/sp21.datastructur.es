@@ -1,23 +1,20 @@
 # Gitlet Design Document
 
-**Name**:
+**Adrian Serbanescu**:
 
 ## Classes and Data Structures
 
-### Class 1
+### Main Class
 
-#### Fields
+Switches between command arguments and throws error should args be missing.
 
-1. Field 1
-2. Field 2
+### Repository Class
 
+1. Sets-up the folder structure for persistence (init method);
+2. Orchestrates between Main Class commands and Command Classes methods;
 
-### Class 2
+### Commit Class
 
-#### Fields
-
-1. Field 1
-2. Field 2
 
 
 ## Algorithms
