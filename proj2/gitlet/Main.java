@@ -11,14 +11,27 @@ public class Main {
     public static void main(String[] args) {
         // TODO: what if args is empty?
         String firstArg = args[0];
+        if (firstArg == null) {
+            throw new GitletException("No command provided.");
+        }
         switch(firstArg) {
             case "init":
-                // TODO: handle the `init` command
+                validateNumArgs("init", args, 1);
+                Repository.init();
                 break;
             case "add":
                 // TODO: handle the `add [filename]` command
                 break;
             // TODO: FILL THE REST IN
+            default:
+                throw  new GitletException("Unknown command: " + args[0]);
+        }
+    }
+
+    public static void validateNumArgs(String cmd, String[] args, int n) {
+        if (args.length != n) {
+            throw new RuntimeException(
+                    String.format("Invalid number of arguments for: %s.", cmd));
         }
     }
 }

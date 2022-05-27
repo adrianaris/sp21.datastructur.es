@@ -13,6 +13,8 @@ import java.util.Date; // TODO: You'll likely use this in this class
  *  @author Adrian Serbanescu
  */
 public class Commit implements Serializable {
+    /** The ID of this commit */
+    public String id;
     /** The message of this Commit. */
     private String message;
     /** Author of the Commit. */
@@ -29,12 +31,14 @@ public class Commit implements Serializable {
 
     public Commit(String message,
                         String author,
+                        String date,
                         String[] parents,
                         String[] files) {
         this.author = author;
         this.message = message;
         this.parents = parents;
         this.files = files;
-        date = DATE_FORMAT.format(new Date());
+        this.date = date == null ? DATE_FORMAT.format(new Date()) : date;
+        id = Utils.sha1();
     }
 }
