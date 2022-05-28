@@ -1,7 +1,9 @@
 package gitlet;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Date;
+import java.util.List;
 
 import static gitlet.Utils.*;
 
@@ -26,9 +28,11 @@ public class Repository {
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
-    /** The branches directory saves the heads of each branch we create*/
+    /** The branches directory saves the heads of each branch we create */
     public static final File BRANCHES = join(GITLET_DIR, "branches");
-    public static final File OBJECTS = join(GITLET_DIR, "objects");
+    public static final File COMMITS = join(GITLET_DIR, "commits");
+    public static final File FILES = join(COMMITS, "files");
+    public static File head = join(GITLET_DIR, "HEAD");
 
     public static void init() {
         if (GITLET_DIR.exists()) {
@@ -37,8 +41,9 @@ public class Repository {
                             "exists in the current directory");
         }
         GITLET_DIR.mkdir();
-        OBJECTS.mkdir();
+        COMMITS.mkdir();
         BRANCHES.mkdir();
+        FILES.mkdir();
         Commit initCommit = new Commit(
                 "initial commit",
                 "Adrian Serbanescu",
@@ -46,10 +51,26 @@ public class Repository {
                 null,
                 null);
 
-        File newCommit = join(OBJECTS, initCommit.id);
+        File newCommit = join(COMMITS, initCommit.id);
         File branch = join(BRANCHES, "master");
         writeObject(newCommit, initCommit);
         writeContents(branch, initCommit.id);
+        writeContents(head, initCommit.id);
         System.out.println(initCommit.toString());
+    }
+
+    public static void add() {
+        String parentID = readContentsAsString(head);
+        List<String> currentFiles = plainFilenamesIn(CWD);
+
+        for (String fileName : currentFiles) {
+            File file = join(CWD, fileName);
+            String hashedFileName = sha1(file);
+            File toBeSaved = join(FILES, hashedFileName);
+            if(!toBeSaved.exists()) {
+                String contentsToBeSaved = fileName + "\n" + readContentsAsString(file);
+
+            }
+        }
     }
 }

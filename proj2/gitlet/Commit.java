@@ -41,4 +41,11 @@ public class Commit implements Serializable {
         this.date = date == null ? DATE_FORMAT.format(new Date()) : date;
         id = Utils.sha1();
     }
+
+    public String[] getFiles() {
+        return files;
+    }
+    //public String[] getParent() {
+    //    return parents;
+    //}
 }
