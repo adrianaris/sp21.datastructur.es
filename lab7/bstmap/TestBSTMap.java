@@ -84,6 +84,7 @@ public class TestBSTMap {
     public void containsKeyNullTest() {
         BSTMap<String, Integer> b = new BSTMap<String, Integer>();
         b.put("hi", null);
+        System.out.println(b.containsKey("hi"));
         assertTrue(b.containsKey("hi"));
     }
 
