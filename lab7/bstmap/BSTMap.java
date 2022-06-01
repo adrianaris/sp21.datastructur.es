@@ -1,5 +1,9 @@
 package bstmap;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     private BSTNode root;
 
@@ -14,13 +18,11 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             this.value = value;
             this.size = size;
         }
-        public BSTNode() {
-        }
     }
 
     @Override
     public void clear() {
-        this.root = new BSTNode();
+        this.root = null;
     }
 
     @Override
@@ -48,12 +50,149 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             return null;
         }
         int compare = key.compareTo(map.key);
-        if (compare == 0) {
-            return map.value;
-        } else if (compare < 0) {
+        if (compare < 0) {
             return get(key, map.left);
         } else if (compare > 0) {
             return get(key, map.right);
+        } else {
+            return map.value;
         }
+    }
+
+    @Override
+    public int size() {
+        return size(root);
+    }
+
+    private int size(BSTNode node) {
+        if (node == null) {
+            return 0;
+        }
+
+        return node.size;
+    }
+
+    @Override
+    public void put(K key, V value) {
+        if (key == null || value == null) {
+            throw new IllegalArgumentException("Calls put with null values");
+        }
+
+        root = put(key, value, root);
+    }
+
+    private BSTNode put(K key, V value, BSTNode node) {
+        if (node == null) {
+            return new BSTNode(key, value, 1);
+        }
+        int compare = key.compareTo(node.key);
+        if (compare == 0) {
+            node.value = value;
+        } else if (compare < 0) {
+            node.left = put(key, value, node.left);
+        } else if (compare > 0) {
+            node.right = put(key, value, node.right);
+        }
+        node.size = 1 + size(node.left) + size(node.right);
+        return node;
+    }
+
+    @Override
+    public Iterator<K> iterator() {
+        return new BSTMapIterator();
+    }
+    private class BSTMapIterator implements Iterator<K> {
+        Set<K> set;
+        Iterator<K> iterator;
+        BSTMapIterator() {
+            set = keySet();
+            iterator = set.iterator();
+        }
+
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+
+        public K next() {
+            return iterator.next();
+        }
+    }
+
+    @Override
+    public Set<K> keySet() {
+        Set<K> set = new HashSet<>();
+        keySet(root, set);
+        return set;
+    }
+
+    private void keySet(BSTNode node, Set<K> set) {
+        if (node != null) {
+            set.add(node.key);
+            if (node.size > 1) {
+                keySet(node.right, set);
+                keySet(node.left, set);
+            }
+        }
+    }
+
+    @Override
+    public V remove(K key) {
+        BSTNode removed = removeNode(key, root);
+        return removed.value;
+    }
+
+    @Override
+    public V remove(K key, V value) {
+        throw new UnsupportedOperationException();
+    }
+
+    private BSTNode removeNode(K key, BSTNode node) {
+        if (node == null) {
+            return null;
+        }
+        int compare = key.compareTo(node.key);
+        if (compare == 0) {
+            if (node.right == null) {
+                return node.left;
+            }
+            if (node.left == null) {
+                return node.right;
+            }
+            node.right = successor(node.right, node);
+        } else if (compare < 0) {
+            node.left = removeNode(key, node.left);
+        } else if (compare > 0 ) {
+            node.right = removeNode(key, node.right);
+        }
+
+        node.size = 1 + size(node.left) + size(node.right);
+        return node;
+    }
+
+    /**
+     * Helper method, always finds successor and replaces the root with it;
+     */
+    private BSTNode successor(BSTNode L, BSTNode R) {
+        if (L.left == null) {
+            R.value = L.value;
+            R.key = L.key;
+            return L.right;
+        } else {
+            L.left = successor(L.left, R);
+            return L;
+        }
+    }
+
+    public static void main(String[] args) {
+        BSTMap<Integer, String> map = new BSTMap();
+
+        for (int i = 0; i < 10; i++) {
+            map.put(i, "x");
+            //map.put((int) (Math.random() * 100), "x");
+        }
+
+        String removed = map.remove(5);
+        System.out.println(map.keySet());
+        System.out.println(removed);
     }
 }
