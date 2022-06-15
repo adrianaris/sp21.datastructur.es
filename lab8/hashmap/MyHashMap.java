@@ -27,12 +27,29 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     /* Instance Variables */
     private Collection<Node>[] buckets;
-    // You should probably define some more!
+
+    private final int INIT_SIZE = 16;
+    private final double INIT_LOAD_FACTOR = 0.75;
+
+    private int initialSize; // size of buckets collection.
+    private int size; //number of elements.
+    private double loadFactor;
 
     /** Constructors */
-    public MyHashMap() { }
+    public MyHashMap() {
+        buckets = (Collection<Node>[]) new Collection[INIT_SIZE];
+        for (int i = 0; i < INIT_SIZE; i++) {
+            buckets[i] = createBucket();
+        }
+    }
 
-    public MyHashMap(int initialSize) { }
+    public MyHashMap(int initialSize) {
+        this.initialSize = initialSize;
+        buckets = (Collection<Node>[]) new Collection[initialSize];
+        for (int i = 0; i < initialSize; i++) {
+            buckets[i] = createBucket();
+        }
+    }
 
     /**
      * MyHashMap constructor that creates a backing array of initialSize.
@@ -88,4 +105,6 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     // TODO: Implement the methods of the Map61B Interface below
     // Your code won't compile until you do so!
 
+    public void clear() {
+    }
 }
