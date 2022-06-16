@@ -1,6 +1,7 @@
 package hashmap;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  *  A hash table-backed Map implementation. Provides amortized constant time
@@ -28,8 +29,8 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     /* Instance Variables */
     private Collection<Node>[] buckets;
 
-    private final int INIT_SIZE = 16;
-    private final double INIT_LOAD_FACTOR = 0.75;
+    private static final int INIT_SIZE = 16;
+    private static final double INIT_LOAD_FACTOR = 0.75;
 
     private int initialSize; // size of buckets collection.
     private int size; //number of elements.
@@ -37,18 +38,11 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     /** Constructors */
     public MyHashMap() {
-        buckets = (Collection<Node>[]) new Collection[INIT_SIZE];
-        for (int i = 0; i < INIT_SIZE; i++) {
-            buckets[i] = createBucket();
-        }
+        this(INIT_SIZE);
     }
 
     public MyHashMap(int initialSize) {
-        this.initialSize = initialSize;
-        buckets = (Collection<Node>[]) new Collection[initialSize];
-        for (int i = 0; i < initialSize; i++) {
-            buckets[i] = createBucket();
-        }
+        this(initialSize, INIT_LOAD_FACTOR);
     }
 
     /**
@@ -58,13 +52,20 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * @param initialSize initial size of backing array
      * @param maxLoad maximum load factor
      */
-    public MyHashMap(int initialSize, double maxLoad) { }
+    public MyHashMap(int initialSize, double maxLoad) {
+        this.initialSize = initialSize;
+        this.loadFactor = maxLoad;
+        buckets = createTable(initialSize);
+    }
 
     /**
      * Returns a new node to be placed in a hash table bucket
      */
     private Node createNode(K key, V value) {
-        return null;
+        Node node = new Node();
+        node.key = key;
+        node.value = value;
+        return node;
     }
 
     /**
@@ -86,7 +87,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * OWN BUCKET DATA STRUCTURES WITH THE NEW OPERATOR!
      */
     protected Collection<Node> createBucket() {
-        return null;
+        return new HashSet<>();
     }
 
     /**
@@ -99,12 +100,16 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * @param tableSize the size of the table to create
      */
     private Collection<Node>[] createTable(int tableSize) {
-        return null;
+        Collection<Node>[] collection = (Collection<Node>[]) new Collection[tableSize];
+        for (int i = 0; i < tableSize; i++) {
+            collection[i] = createBucket();
+        }
     }
 
     // TODO: Implement the methods of the Map61B Interface below
     // Your code won't compile until you do so!
 
     public void clear() {
+        buckets = createTable(initialSize);
     }
 }
