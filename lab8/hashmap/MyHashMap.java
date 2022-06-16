@@ -56,6 +56,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         this.initialSize = initialSize;
         this.loadFactor = maxLoad;
         buckets = createTable(initialSize);
+        size = 0;
     }
 
     /**
@@ -104,12 +105,27 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         for (int i = 0; i < tableSize; i++) {
             collection[i] = createBucket();
         }
+        return collection;
     }
 
     // TODO: Implement the methods of the Map61B Interface below
     // Your code won't compile until you do so!
 
+    private int hash(K key) {
+        int hash = key.hashCode();
+        return hash - (int) Math.floor(hash / initialSize) * initialSize;
+    }
+
+    @Override
     public void clear() {
         buckets = createTable(initialSize);
+    }
+
+    @Override
+    public boolean containsKey(K key) {
+        if (key == null) {
+            throw new IllegalArgumentException("Calls containsKey() with a null key.");
+        }
+        return buckets[hash(key)].contains(key);
     }
 }
