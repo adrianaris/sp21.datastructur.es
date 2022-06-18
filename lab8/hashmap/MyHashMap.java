@@ -153,6 +153,11 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     @Override
     public void put(K key, V value) {
+        if ((double) initialSize / (size + 1) >= loadFactor) {
+            initialSize = initialSize * 2;
+            resize(initialSize);
+        }
+
         int hash = hash(key);
         Node node = createNode(key, value);
 
@@ -170,5 +175,30 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
             }
         }
         return set;
+    }
+
+    @Override
+    public V remove(K key) {
+        Collection<Node> bucket = buckets[hash(key)];
+        for (Node n : bucket) {
+            if (n.key.equals(key)) {
+                V value = n.value;
+                bucket.remove(n);
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    private void resize(int size) {
+        Collection<Node>[] newTable = createTable(size);
+        for (Collection<Node> bucket : buckets) {
+            for (Node n : bucket) {
+                newTable[hash(n.key)].add(n);
+            }
+        }
+
+        buckets = newTable;
     }
 }
