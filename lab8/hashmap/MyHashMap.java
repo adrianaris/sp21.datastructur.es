@@ -66,10 +66,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * Returns a new node to be placed in a hash table bucket
      */
     private Node createNode(K key, V value) {
-        Node node = new Node();
-        node.key = key;
-        node.value = value;
-        return node;
+        return new Node(key, value);
     }
 
     /**
