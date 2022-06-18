@@ -157,16 +157,22 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         }
 
         int hash = hash(key);
-        Node node = createNode(key, value);
+        boolean containsKey = false;
 
         for (Node n : buckets[hash]) {
             if (n.key.equals(key)) {
                 n.value = value;
+                containsKey = true;
+                break;
             }
         }
 
-        buckets[hash].add(node);
-        size++;
+        if (!containsKey) {
+            Node node = createNode(key, value);
+            buckets[hash].add(node);
+            size++;
+        }
+
     }
 
     @Override
