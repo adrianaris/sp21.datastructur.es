@@ -1,9 +1,9 @@
 package hashmap;
 
-import afu.org.checkerframework.checker.oigj.qual.O;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -161,7 +161,14 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         int hash = hash(key);
         Node node = createNode(key, value);
 
+        for (Node n : buckets[hash]) {
+            if (n.key.equals(key)) {
+                n.value = value;
+            }
+        }
+
         buckets[hash].add(node);
+        size++;
     }
 
     @Override
@@ -182,13 +189,50 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         Collection<Node> bucket = buckets[hash(key)];
         for (Node n : bucket) {
             if (n.key.equals(key)) {
-                V value = n.value;
+                V removed = n.value;
                 bucket.remove(n);
+                size--;
+                return removed;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public V remove(K key, V value) {
+        Collection<Node> bucket = buckets[hash(key)];
+        for (Node n : bucket) {
+            if (n.key.equals(key) && n.value.equals(value)) {
+                bucket.remove(n);
+                size--;
                 return value;
             }
         }
 
         return null;
+    }
+
+    public Iterator<K> iterator() {
+        return new MyHashMapIterator();
+    }
+
+    private class MyHashMapIterator implements Iterator<K> {
+        Set<K> set;
+        Iterator<K> iterator;
+
+        MyHashMapIterator() {
+            set = keySet();
+            iterator = set.iterator();
+        }
+
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+
+        public K next() {
+            return iterator.next();
+        }
     }
 
     private void resize(int size) {
