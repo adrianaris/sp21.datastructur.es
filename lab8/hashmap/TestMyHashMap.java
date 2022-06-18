@@ -48,6 +48,7 @@ public class TestMyHashMap {
     }
 
     public static void sanityContainsKeyTest(MyHashMap<String, Integer> b) {
+        b.containsKey("waterYouDoingHere");
         assertFalse(b.containsKey("waterYouDoingHere"));
         b.put("waterYouDoingHere", 0);
         assertTrue(b.containsKey("waterYouDoingHere"));

@@ -113,12 +113,13 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     private int hash(K key) {
         int hash = key.hashCode();
-        return hash - (int) Math.floor(hash / initialSize) * initialSize;
+        return Math.floorMod(hash, initialSize);
     }
 
     @Override
     public void clear() {
         buckets = createTable(initialSize);
+        size = 0;
     }
 
     @Override
@@ -126,7 +127,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         if (key == null) {
             throw new IllegalArgumentException("Calls containsKey() with a null key.");
         }
-        return buckets[hash(key)].contains(key);
+        return get(key) != null;
     }
 
     @Override
@@ -150,7 +151,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     @Override
     public void put(K key, V value) {
-        if ((double) initialSize / (size + 1) >= loadFactor) {
+        if (((double) (size + 1) / initialSize) >= loadFactor) {
             initialSize = initialSize * 2;
             resize(initialSize);
         }
@@ -210,6 +211,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         return null;
     }
 
+    @Override
     public Iterator<K> iterator() {
         return new MyHashMapIterator();
     }
