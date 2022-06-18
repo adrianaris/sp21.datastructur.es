@@ -1,7 +1,10 @@
 package hashmap;
 
+import afu.org.checkerframework.checker.oigj.qual.O;
+
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  *  A hash table-backed Map implementation. Provides amortized constant time
@@ -127,5 +130,45 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
             throw new IllegalArgumentException("Calls containsKey() with a null key.");
         }
         return buckets[hash(key)].contains(key);
+    }
+
+    @Override
+    public V get(K key) {
+        if (key == null) {
+            throw new IllegalArgumentException("Calls get() with a null key.");
+        }
+        Collection<Node> bucket = buckets[hash(key)];
+        for (Node n : bucket) {
+            if (n.key.equals(key)) {
+                return n.value;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public void put(K key, V value) {
+        int hash = hash(key);
+        Node node = createNode(key, value);
+
+        buckets[hash].add(node);
+    }
+
+    @Override
+    public Set<K> keySet() {
+        Set<K> set = new HashSet<>();
+        for (Collection<Node> bucket : buckets) {
+            if (!bucket.isEmpty()) {
+                for (Node n : bucket) {
+                    set.add(n.key);
+                }
+            }
+        }
+        return set;
     }
 }
