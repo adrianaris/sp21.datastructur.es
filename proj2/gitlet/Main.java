@@ -9,7 +9,6 @@ public class Main {
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
     public static void main(String[] args) {
-        // TODO: what if args is empty?
         String firstArg = args[0];
         if (firstArg == null) {
             throw new GitletException("No command provided.");
@@ -20,11 +19,85 @@ public class Main {
                 Repository.init();
                 break;
             case "add":
-                // TODO: handle the `add [filename]` command
+                validateNumArgs("add", args, 2);
+                checkIfGitletDirExists();
+                Repository.add(args[1]);
                 break;
-            // TODO: FILL THE REST IN
+            case "commit":
+                if (args.length != 2) {
+                    throw new GitletException("no message");
+                }
+                checkIfGitletDirExists();
+                Repository.commit(args[1]);
+                break;
+            case "rm":
+                validateNumArgs("rm", args, 2);
+                checkIfGitletDirExists();
+                Repository.rm(args[1]);
+                break;
+            case "log":
+                validateNumArgs("log", args, 1);
+                checkIfGitletDirExists();
+                Repository.log();
+                break;
+            case "global-log":
+                validateNumArgs("global-log", args, 1);
+                checkIfGitletDirExists();
+                Repository.globalLog();
+                break;
+            case "find":
+                validateNumArgs("find", args, 2);
+                checkIfGitletDirExists();
+                Repository.find(args[1]);
+                break;
+            case "status":
+                validateNumArgs("status", args, 1);
+                checkIfGitletDirExists();
+                Repository.status();
+                break;
+            case "checkout":
+                checkIfGitletDirExists();
+                if (args.length == 2) {
+                    Repository.checkOutBranch(args[1]);
+                } else if(args.length == 3) {
+                    if (!args[1].equals("--")) {
+                        throw new GitletException("Unsupported modifier.");
+                    }
+                    Repository.checkOutFileInHead(args[2]);
+                } else if(args.length == 4) {
+                    if (!args[2].equals("--")) {
+                        throw new GitletException("Unsupported modifier.");
+                    }
+                    Repository.checkOutFileInCommit(args[1], args[3]);
+                } else {
+                    throw new GitletException("Invalid number of arguments" +
+                            " for: checkout");
+                }
+                break;
+            case "branch":
+                validateNumArgs("branch", args, 2);
+                checkIfGitletDirExists();
+                Repository.branch(args[1]);
+                break;
+            case "rm-branch":
+                validateNumArgs("rm-branch", args, 2);
+                checkIfGitletDirExists();
+                Repository.rm_branch(args[1]);
+                break;
+            case "reset":
+                validateNumArgs("reset", args, 2);
+                checkIfGitletDirExists();
+                Repository.reset(args[1]);
+                break;
             default:
                 throw  new GitletException("Unknown command: " + args[0]);
+        }
+    }
+
+    public static void checkIfGitletDirExists() {
+        if (!Repository.GITLET_DIR.exists()) {
+            throw new GitletException("No gitlet version control exists" +
+                    " in the current directory.");
         }
     }
 

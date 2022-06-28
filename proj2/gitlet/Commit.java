@@ -1,10 +1,13 @@
 package gitlet;
+
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date; // TODO: You'll likely use this in this class
+import java.util.Date;
+import java.util.HashMap;
 
-/** Represents a gitlet commit object.
+/**
+ * Represents a gitlet commit object.
  * This Class takes care of saving to the file system the actual changes to our
  * repository. It achieves this by saving for each commit a file containing the
  * metadata of the commit (like Author, message etc.) and actual data that we want to track
@@ -20,32 +23,70 @@ public class Commit implements Serializable {
     /** Author of the Commit. */
     private String author;
     private String date;
-    private final DateFormat DATE_FORMAT = new SimpleDateFormat("MMM d, yyy HH:mm a");
+    private final DateFormat DATE_FORMAT = new SimpleDateFormat(
+            "EEE MMM d HH:mm:ss yyy Z");
+    private String parent;
     /**
-     * Array of parents IDs. Array because in case of branching and merging
-     * we can end-up in the situation that the merge-commit has 2 parents.
+     * Should the commit be a merge this is the parentID of the merged-in commit parent.
      */
-    private String[] parents;
-    /** Array of files IDs that the Commit keeps track of. */
-    private String[] files;
+    private String mergeParent;
+    /** Map of fileNames and corresponding sha1 */
+    private HashMap<String, String> files;
 
     public Commit(String message,
-                        String author,
-                        String date,
-                        String[] parents,
-                        String[] files) {
+                  String author,
+                  String parent,
+                  String mergeParent,
+                  HashMap<String, String> files) {
         this.author = author;
         this.message = message;
-        this.parents = parents;
+        this.parent = parent;
         this.files = files;
-        this.date = date == null ? DATE_FORMAT.format(new Date()) : date;
-        id = Utils.sha1();
+        this.date = parent == null
+                ? DATE_FORMAT.format(new Date(0))
+                : DATE_FORMAT.format(new Date());
+        id = files == null ? Utils.sha1() : Utils.sha1(files.toString());
+        this.mergeParent = mergeParent;
     }
 
-    public String[] getFiles() {
+    public void merge(Commit commit, String message) {
+        mergeParent = commit.getParent();
+        HashMap<String, String> toBeMergedMap = commit.getFiles();
+        files.putAll(toBeMergedMap);
+        date = DATE_FORMAT.format(new Date());
+        id = Utils.sha1(files.toString());
+        this.message = message;
+    }
+
+    public boolean isEmpty() {
+        return files == null;
+    }
+    public HashMap<String, String> getFiles() {
         return files;
     }
-    //public String[] getParent() {
-    //    return parents;
-    //}
+
+    public void print() {
+        System.out.println("===");
+        System.out.println("commit " + id);
+        if (mergeParent != null) {
+            System.out.println("Merge: " +
+                    parent.substring(0, 6) + " " +
+                    mergeParent.substring(0, 6));
+        }
+        System.out.println("Date: " + date);
+        System.out.println(message);
+        System.out.println();
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getId() {
+        return id;
+    }
 }
