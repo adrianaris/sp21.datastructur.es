@@ -32,8 +32,8 @@ public class Repository {
     public static final File FILES = join(GITLET_DIR, "files");
     /** This file keeps track of which commit is currently active. */
     private static final File HEAD = join(GITLET_DIR, "HEAD");
-    private static final File activeBranch = join(BRANCHES, "current");
-    public static File STAGING_AREA = join(GITLET_DIR, "INDEX");
+    private static final File ACTIVE_BRANCH = join(BRANCHES, "current");
+    private static final File STAGING_AREA = join(GITLET_DIR, "INDEX");
 
     public static void init() {
         if (GITLET_DIR.exists()) {
@@ -60,7 +60,7 @@ public class Repository {
         writeObject(newCommit, initCommit);
         writeContents(branch, initCommit.getId());
         writeContents(HEAD, initCommit.getId());
-        writeContents(activeBranch, "master");
+        writeContents(ACTIVE_BRANCH, "master");
         writeObject(STAGING_AREA, new StagingArea());
     }
 
@@ -129,7 +129,7 @@ public class Repository {
                 newCommitFiles
         );
         File commit = createCommitFile(newCommit.getId());
-        File branch = join(BRANCHES, readContentsAsString(activeBranch));
+        File branch = join(BRANCHES, readContentsAsString(ACTIVE_BRANCH));
         writeObject(commit, newCommit);
         writeContents(branch, newCommit.getId());
         writeContents(HEAD, newCommit.getId());
@@ -301,7 +301,7 @@ public class Repository {
     }
 
     public static void checkOutBranch(String branchName) {
-        if (readContentsAsString(activeBranch).equals(branchName)) {
+        if (readContentsAsString(ACTIVE_BRANCH).equals(branchName)) {
             System.out.println("No need to checkout the current branch");
             System.exit(0);
         }
@@ -327,7 +327,7 @@ public class Repository {
     }
 
     public static void rmBranch(String branchName) {
-        String currentBranch = readContentsAsString(activeBranch);
+        String currentBranch = readContentsAsString(ACTIVE_BRANCH);
         if (currentBranch.equals(branchName)) {
             System.out.println("Cannot remove the current branch.");
             System.exit(0);
@@ -347,7 +347,7 @@ public class Repository {
     }
 
     public static void merge(String branchName) {
-        String currentBranch = readContentsAsString(activeBranch);
+        String currentBranch = readContentsAsString(ACTIVE_BRANCH);
         String currentBranchID = readContentsAsString(HEAD);
 
         if (branchName.equals(currentBranch)) {
@@ -517,23 +517,33 @@ public class Repository {
         HashMap<String, String> replaceFiles =
                 checkOutCommit(commitID).getFiles();
         List<String> currentFiles = plainFilenamesIn(CWD);
-        for (String file : currentFiles) {
-            if (!activeCommitFiles.containsKey(file)
-                    && replaceFiles.containsKey(file)) {
-                System.out.println("There is an untracked file in the"
-                        + " way; delete it, or add and commit it first.");
-                System.exit(0);
+        if (currentFiles != null) {
+            for (String file : currentFiles) {
+                if ((activeCommitFiles == null
+                        || !activeCommitFiles.containsKey(file))
+                        && (replaceFiles != null
+                        && replaceFiles.containsKey(file))) {
+                    System.out.println("There is an untracked file in the"
+                            + " way; delete it, or add and commit it first.");
+                    System.exit(0);
+                }
             }
         }
         writeContents(HEAD, commitID);
-        for (Map.Entry<String, String> set : replaceFiles.entrySet()) {
-            File file = join(CWD, set.getKey());
-            File blob = join(FILES, set.getValue());
-            writeContents(file, readContentsAsString(blob));
-            activeCommitFiles.remove(set.getKey());
+        if (replaceFiles != null) {
+            for (Map.Entry<String, String> set : replaceFiles.entrySet()) {
+                File file = join(CWD, set.getKey());
+                File blob = join(FILES, set.getValue());
+                writeContents(file, readContentsAsString(blob));
+            }
         }
-        for (Map.Entry<String, String> set: activeCommitFiles.entrySet()) {
-            restrictedDelete(join(CWD, set.getKey()));
+        if (activeCommitFiles != null) {
+            for (Map.Entry<String, String> set: activeCommitFiles.entrySet()) {
+                if (replaceFiles == null
+                        || !replaceFiles.containsKey(set.getKey())) {
+                    restrictedDelete(join(CWD, set.getKey()));
+                }
+            }
         }
     }
 
