@@ -61,17 +61,20 @@ public class Main {
                     Repository.checkOutBranch(args[1]);
                 } else if(args.length == 3) {
                     if (!args[1].equals("--")) {
-                        throw new GitletException("Unsupported modifier.");
+                        System.out.println("Incorrect operands.");
+                        System.exit(0);
                     }
                     Repository.checkOutFileInHead(args[2]);
                 } else if(args.length == 4) {
                     if (!args[2].equals("--")) {
-                        throw new GitletException("Unsupported modifier.");
+                        System.out.println("Incorrect operands.");
+                        System.exit(0);
                     }
                     Repository.checkOutFileInCommit(args[1], args[3]);
                 } else {
-                    throw new GitletException("Invalid number of arguments" +
+                    System.out.println("Invalid number of arguments" +
                             " for: checkout");
+                    System.exit(0);
                 }
                 break;
             case "branch":
@@ -82,7 +85,7 @@ public class Main {
             case "rm-branch":
                 validateNumArgs("rm-branch", args, 2);
                 checkIfGitletDirExists();
-                Repository.rm_branch(args[1]);
+                Repository.rmBranch(args[1]);
                 break;
             case "reset":
                 validateNumArgs("reset", args, 2);

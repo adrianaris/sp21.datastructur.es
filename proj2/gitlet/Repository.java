@@ -19,7 +19,7 @@ import static gitlet.Utils.*;
  *  @author Adrian Serbanescu
  */
 public class Repository {
-    public static String AUTHOR = "Adrian Serbanescu";
+    private static final String AUTHOR = "Adrian Serbanescu";
     /** The current working directory. */
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
@@ -31,15 +31,15 @@ public class Repository {
     /** This dir persists all versions of the repository's files. */
     public static final File FILES = join(GITLET_DIR, "files");
     /** This file keeps track of which commit is currently active. */
-    public static File head = join(GITLET_DIR, "HEAD");
-    public static File activeBranch = join(BRANCHES, "current");
+    private static final File HEAD = join(GITLET_DIR, "HEAD");
+    private static final File activeBranch = join(BRANCHES, "current");
     public static File STAGING_AREA = join(GITLET_DIR, "INDEX");
 
     public static void init() {
         if (GITLET_DIR.exists()) {
             System.out.println(
-                    "A Gitlet version-control system already" +
-                            "exists in the current directory.");
+                    "A Gitlet version-control system already"
+                            + "exists in the current directory.");
             System.exit(0);
         }
         GITLET_DIR.mkdir();
@@ -53,13 +53,13 @@ public class Repository {
                 null,
                 null);
 
-        File newCommitDir = join(COMMITS, initCommit.id.substring(0, 4));
+        File newCommitDir = join(COMMITS, initCommit.getId().substring(0, 4));
         newCommitDir.mkdir();
-        File newCommit = join(newCommitDir, initCommit.id.substring(4));
+        File newCommit = join(newCommitDir, initCommit.getId().substring(4));
         File branch = join(BRANCHES, "master");
         writeObject(newCommit, initCommit);
-        writeContents(branch, initCommit.id);
-        writeContents(head, initCommit.id);
+        writeContents(branch, initCommit.getId());
+        writeContents(HEAD, initCommit.getId());
         writeContents(activeBranch, "master");
         writeObject(STAGING_AREA, new StagingArea());
     }
@@ -67,7 +67,7 @@ public class Repository {
     public static void add(String fileName) {
         StagingArea stagingArea = readObject(STAGING_AREA, StagingArea.class);
         List<String> currentFiles = plainFilenamesIn(CWD);
-        Commit currentCommit = checkOutCommit(readContentsAsString(head));
+        Commit currentCommit = checkOutCommit(readContentsAsString(HEAD));
         HashMap<String, String> currentCommitFileMap =
                 currentCommit.getFiles();
         if (currentFiles == null) {
@@ -104,7 +104,7 @@ public class Repository {
             System.out.println("No changes added to the commit.");
             System.exit(0);
         }
-        Commit parentCommit = checkOutCommit(readContentsAsString(head));
+        Commit parentCommit = checkOutCommit(readContentsAsString(HEAD));
         HashMap<String, String> newCommitFiles = parentCommit.isEmpty()
                 ? new HashMap<>()
                 : parentCommit.getFiles();
@@ -124,24 +124,24 @@ public class Repository {
         Commit newCommit = new Commit(
                 message,
                 AUTHOR,
-                parentCommit.id,
+                parentCommit.getId(),
                 mergedInCommitID,
                 newCommitFiles
         );
-        File commit = createCommitFile(newCommit.id);
+        File commit = createCommitFile(newCommit.getId());
         File branch = join(BRANCHES, readContentsAsString(activeBranch));
         writeObject(commit, newCommit);
-        writeContents(branch, newCommit.id);
-        writeContents(head, newCommit.id);
+        writeContents(branch, newCommit.getId());
+        writeContents(HEAD, newCommit.getId());
         stagingArea.map.clear();
         writeObject(STAGING_AREA, stagingArea);
     }
 
     public static void rm(String fileName) {
         StagingArea stagingArea = readObject(STAGING_AREA, StagingArea.class);
-        Commit currentCommit = checkOutCommit(readContentsAsString(head));
+        Commit currentCommit = checkOutCommit(readContentsAsString(HEAD));
         HashMap<String, String> commitedFiles = currentCommit.getFiles();
-        if (!commitedFiles.containsKey(fileName)) {
+        if (commitedFiles == null || !commitedFiles.containsKey(fileName)) {
             if (!stagingArea.map.containsKey(fileName)) {
                 System.out.println("No reason to remove the file.");
                 System.exit(0);
@@ -157,7 +157,7 @@ public class Repository {
     }
 
     public static void log() {
-        Commit currentCommit = checkOutCommit(readContentsAsString(head));
+        Commit currentCommit = checkOutCommit(readContentsAsString(HEAD));
         log(currentCommit);
     }
 
@@ -185,9 +185,8 @@ public class Repository {
             Commit com = checkOutCommit(commit);
             if (message.equals(com.getMessage())) {
                 System.out.println(commit);
-                System.exit(1);
+                found++;
             }
-            found++;
         }
         if (found == 0) {
             System.out.println("Found no commit with that message.");
@@ -204,7 +203,7 @@ public class Repository {
             List<String> commits = plainFilenamesIn(dir);
             assert commits != null;
             for (String commit: commits) {
-                set.add(commitDir+commit);
+                set.add(commitDir + commit);
             }
         }
         return set;
@@ -212,7 +211,7 @@ public class Repository {
 
     public static void status() {
         StagingArea stagingArea = readObject(STAGING_AREA, StagingArea.class);
-        Commit currentCommit = checkOutCommit(readContentsAsString(head));
+        Commit currentCommit = checkOutCommit(readContentsAsString(HEAD));
         HashMap<String, String> commitedFiles = currentCommit.getFiles();
         List<String> branches = plainFilenamesIn(BRANCHES);
         String currentBranch = readContentsAsString(join(BRANCHES, "current"));
@@ -222,7 +221,18 @@ public class Repository {
         StringBuilder removedFiles = new StringBuilder();
         StringBuilder modificationsNotStaged = new StringBuilder();
         StringBuilder untrackedFiles = new StringBuilder();
+        StringBuilder branchFiles = new StringBuilder();
 
+        assert branches != null;
+        for (String branch : branches) {
+            if (!branch.equals("current")) {
+                if (branch.equals(currentBranch)) {
+                    branchFiles.append("*" + branch).append("\n");
+                } else {
+                    branchFiles.append(branch).append("\n");
+                }
+            }
+        }
         if (commitedFiles != null) {
             for (Map.Entry<String, String> set : commitedFiles.entrySet()) {
                 String fileName = set.getKey();
@@ -261,16 +271,7 @@ public class Repository {
             }
         }
         System.out.println("=== Branches ===");
-        assert branches != null;
-        for (String branch : branches) {
-            if (!branch.equals("current")) {
-                if (branch.equals(currentBranch)) {
-                    System.out.println("*" + branch + "\n");
-                } else {
-                    System.out.println(branch  + "\n");
-                }
-            }
-        }
+        System.out.println(branchFiles);
         System.out.println("=== Staged Files ===");
         System.out.println(stagedFiles);
         System.out.println("=== Removed Files ===");
@@ -282,7 +283,7 @@ public class Repository {
     }
 
     public static void checkOutFileInHead(String fileName) {
-        String headCommit = readContentsAsString(head);
+        String headCommit = readContentsAsString(HEAD);
         checkOutFileInCommit(headCommit, fileName);
     }
 
@@ -317,18 +318,16 @@ public class Repository {
 
 
     public static void branch(String branchName) {
-        List<String> currentBranches = plainFilenamesIn(BRANCHES);
-        assert currentBranches != null;
-        if (currentBranches.contains(branchName)) {
-            throw new GitletException("A branch with that name already exists.");
-        }
         File branch = join(BRANCHES, branchName);
-        writeContents(branch, readContentsAsString(head));
-        writeContents(activeBranch, branchName);
+        if (branch.exists()) {
+            System.out.println("A branch with that name already exists.");
+            System.exit(0);
+        }
+        writeContents(branch, readContentsAsString(HEAD));
     }
 
-    public static void rm_branch(String branchName) {
-        String currentBranch = readContentsAsString(join(BRANCHES, "current"));
+    public static void rmBranch(String branchName) {
+        String currentBranch = readContentsAsString(activeBranch);
         if (currentBranch.equals(branchName)) {
             System.out.println("Cannot remove the current branch.");
             System.exit(0);
@@ -337,8 +336,8 @@ public class Repository {
         if (branch.exists()) {
             restrictedDelete(branch);
         } else {
-            System.out.println("A branch with that" +
-                    " name does not exist.");
+            System.out.println("A branch with that"
+                    + " name does not exist.");
             System.exit(0);
         }
     }
@@ -349,7 +348,7 @@ public class Repository {
 
     public static void merge(String branchName) {
         String currentBranch = readContentsAsString(activeBranch);
-        String currentBranchID = readContentsAsString(head);
+        String currentBranchID = readContentsAsString(HEAD);
 
         if (branchName.equals(currentBranch)) {
             System.out.println("Cannot merge a branch with itself");
@@ -357,8 +356,8 @@ public class Repository {
         }
         File branch = join(BRANCHES, branchName);
         if (!branch.exists()) {
-            System.out.println("A branch with that" +
-                    " name does not exist.");
+            System.out.println("A branch with that"
+                    + " name does not exist.");
             System.exit(0);
         }
         StagingArea stagingArea = readObject(STAGING_AREA, StagingArea.class);
@@ -371,8 +370,8 @@ public class Repository {
         String splitPointID = splitPointID(branchID);
 
         if (branchID.equals(splitPointID)) {
-            System.out.println("Given branch is an ancestor" +
-                    " of the current branch.");
+            System.out.println("Given branch is an ancestor"
+                    + " of the current branch.");
             System.exit(0);
         }
         if (splitPointID.equals(currentBranchID)) {
@@ -389,7 +388,7 @@ public class Repository {
     }
 
     //Helper method for merge.
-    private static void merge(String active, String given, String split){
+    private static void merge(String active, String given, String split) {
         StagingArea stagingArea = readObject(STAGING_AREA, StagingArea.class);
         HashMap<String, String> activeF = checkOutCommit(active).getFiles();
         HashMap<String, String> givenF = checkOutCommit(given).getFiles();
@@ -445,12 +444,12 @@ public class Repository {
     // Helper method to find and return split point.
     private static String splitPointID(String commitID) {
         HashSet<String> ancestors = new HashSet<>();
-        String headID = readContentsAsString(head);
-        return BFS(ancestors, commitID, headID);
+        String headID = readContentsAsString(HEAD);
+        return bfs(ancestors, commitID, headID);
     }
 
     // Helper method to traverse the commits tree and return split point.
-    private static String BFS(HashSet<String> set,
+    private static String bfs(HashSet<String> set,
                               String branch1,
                               String branch2) {
         if (set.contains(branch1) && branch1 != null) {
@@ -467,7 +466,7 @@ public class Repository {
 
         String parent1 = c1 != null ? c1.getParent() : null;
         String parent2 = c2 != null ? c2.getParent() : null;
-        return BFS(set, parent1, parent2);
+        return bfs(set, parent1, parent2);
     }
 
     // Helper method to check out a commit.
@@ -514,19 +513,19 @@ public class Repository {
     // of files in the provided commit.
     private static void switchActiveCommit(String commitID) {
         HashMap<String, String> activeCommitFiles =
-                checkOutCommit(readContentsAsString(head)).getFiles();
+                checkOutCommit(readContentsAsString(HEAD)).getFiles();
         HashMap<String, String> replaceFiles =
                 checkOutCommit(commitID).getFiles();
         List<String> currentFiles = plainFilenamesIn(CWD);
         for (String file : currentFiles) {
-            if (!activeCommitFiles.containsKey(file) &&
-                    replaceFiles.containsKey(file)) {
-                System.out.println("There is an untracked file in the" +
-                        " way; delete it, or add and commit it first.");
+            if (!activeCommitFiles.containsKey(file)
+                    && replaceFiles.containsKey(file)) {
+                System.out.println("There is an untracked file in the"
+                        + " way; delete it, or add and commit it first.");
                 System.exit(0);
             }
         }
-        writeContents(head, commitID);
+        writeContents(HEAD, commitID);
         for (Map.Entry<String, String> set : replaceFiles.entrySet()) {
             File file = join(CWD, set.getKey());
             File blob = join(FILES, set.getValue());
@@ -541,7 +540,7 @@ public class Repository {
     // Helper class for staging.
     // Perhaps I should experiment with singleton Class!!!
     public static class StagingArea implements Serializable {
-        public HashMap<String, String> map;
+        private HashMap<String, String> map;
         public StagingArea() {
             map = new HashMap<>();
         }
