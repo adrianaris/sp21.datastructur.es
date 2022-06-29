@@ -242,6 +242,15 @@ public class Repository {
                 }
             }
         }
+        if (currentFiles != null) {
+            for (String fileName : currentFiles) {
+                if (!stagingArea.map.containsKey(fileName)
+                    && (commitedFiles == null
+                        || !commitedFiles.containsKey(fileName))) {
+                    untrackedFiles.append(fileName).append("\n");
+                }
+            }
+        }
 
         for (Map.Entry<String, String> set: stagingArea.map.entrySet()) {
             String fileName = set.getKey();
