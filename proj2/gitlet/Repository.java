@@ -1,11 +1,9 @@
 package gitlet;
 
+
 import java.io.File;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static gitlet.Utils.*;
 
@@ -460,36 +458,71 @@ public class Repository {
 
     // Helper method to find and return split point.
     private static String splitPointID(String commitID) {
-        HashSet<String> ancestors = new HashSet<>();
-        String headID = readContentsAsString(HEAD);
-        return bfs(ancestors, commitID, headID);
+        String head = readContentsAsString(HEAD);
+        HashMap<String, Date> hAnces = ancestors(head, new HashMap<>());
+        HashMap<String, Date> gAnces = ancestors(commitID, new HashMap<>());
+        String cAnces = null;
+        for (Map.Entry<String, Date> entry: hAnces.entrySet()) {
+            if (gAnces.containsKey(entry.getKey())) {
+                if (cAnces == null) {
+                    cAnces = entry.getKey();
+                } else {
+                    Commit c = checkOutCommit(cAnces);
+                    if (c.getDate().compareTo(entry.getValue()) < 0) {
+                        cAnces = entry.getKey();
+                    }
+                }
+            }
+        }
+        return cAnces;
+    }
+
+    private static HashMap<String, Date> ancestors(String id,
+                                                   HashMap<String, Date> map) {
+        if (id == null || map.containsKey(id)) {
+            return map;
+        }
+        Commit c = checkOutCommit(id);
+        map.put(id, c.getDate());
+        String p1 = c.getParent();
+        String p2 = c.getMergeParent();
+        HashMap<String, Date> map1 = ancestors(p1, map);
+        HashMap<String, Date> map2 = ancestors(p2, map);
+        map1.putAll(map2);
+
+        return map1;
     }
 
     // Helper method to traverse the commits tree and return split point.
-    private static String bfs(HashSet<String> set,
-                              String branch1,
-                              String branch2) {
-        if (branch1 != null && branch2 != null) {
-            if (branch1.equals(branch2)) {
-                return branch1;
-            }
-        }
-        if (branch1 != null && set.contains(branch1)) {
-            return branch1;
-        }
-        if (branch2 != null && set.contains(branch2)) {
-            return branch2;
-        }
-        set.add(branch1);
-        set.add(branch2);
-
-        Commit c1 = checkOutCommit(branch1);
-        Commit c2 = checkOutCommit(branch2);
-
-        String parent1 = c1 != null ? c1.getParent() : null;
-        String parent2 = c2 != null ? c2.getParent() : null;
-        return bfs(set, parent1, parent2);
-    }
+//    private static String splitPointID(String commitID) {
+//        HashSet<String> ancestors = new HashSet<>();
+//        String head = readContentsAsString(HEAD);
+//        return bfs(ancestors, head, commitID);
+//    }
+//    private static String bfs(HashSet<String> set,
+//                              String branch1,
+//                              String branch2) {
+//        if (branch1 != null && branch2 != null) {
+//            if (branch1.equals(branch2)) {
+//                return branch1;
+//            }
+//        }
+//        if (branch1 != null && set.contains(branch1)) {
+//            return branch1;
+//        }
+//        if (branch2 != null && set.contains(branch2)) {
+//            return branch2;
+//        }
+//        set.add(branch1);
+//        set.add(branch2);
+//
+//        Commit c1 = checkOutCommit(branch1);
+//        Commit c2 = checkOutCommit(branch2);
+//
+//        String parent1 = c1 != null ? c1.getParent() : null;
+//        String parent2 = c2 != null ? c2.getParent() : null;
+//        return bfs(set, parent1, parent2);
+//    }
 
     /**
      * Helper method to check out a commit.
