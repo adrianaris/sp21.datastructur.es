@@ -444,9 +444,9 @@ public class Repository {
                     File gFile = join(FILES, givenFsha);
                     StringBuilder fileContents = new StringBuilder();
                     fileContents.append("<<<<<<< HEAD\n");
-                    fileContents.append(readContentsAsString(gFile));
-                    fileContents.append("=======\n");
                     fileContents.append(readContentsAsString(aFile));
+                    fileContents.append("=======\n");
+                    fileContents.append(readContentsAsString(gFile));
                     fileContents.append(">>>>>>>");
                     writeContents(join(CWD, fileName), fileContents.toString());
                     stagingArea.map.put(fileName, fileContents.toString());
