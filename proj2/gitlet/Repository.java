@@ -78,7 +78,7 @@ public class Repository {
         }
 
         if (currentFiles == null) {
-            System.out.println("CWD is empty");
+            System.out.println("CWD is empty")g
             System.exit(0);
         } else if (!currentFiles.contains(fileName)) {
             System.out.println("File does not exist.");
@@ -444,7 +444,7 @@ public class Repository {
                     fileContents.append(readContentsAsString(gFile));
                     fileContents.append("=======\n");
                     fileContents.append(readContentsAsString(aFile));
-                    fileContents.append(">>>>>>>\n");
+                    fileContents.append(">>>>>>>");
                     writeContents(join(CWD, fileName), fileContents.toString());
                     stagingArea.map.put(fileName, fileContents.toString());
                     conflict = true;
