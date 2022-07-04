@@ -351,6 +351,9 @@ public class Repository {
 
     public static void reset(String commitId) {
         switchActiveCommit(commitId);
+        StagingArea sa = readObject(STAGING_AREA, StagingArea.class);
+        sa.map.clear();
+        writeObject(STAGING_AREA, sa);
     }
 
     public static void merge(String branchName) {
