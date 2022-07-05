@@ -49,7 +49,7 @@ public class Repository {
                 AUTHOR,
                 null,
                 null,
-                null);
+                new HashMap<>());
 
         File newCommitDir = join(COMMITS, initCommit.getId().substring(0, 4));
         newCommitDir.mkdir();
@@ -88,9 +88,7 @@ public class Repository {
         File file = join(CWD, fileName);
         String contents = readContentsAsString(file);
         String sha1 = sha1(contents);
-        String commitedSHA = commitFiles == null
-                ? null
-                : commitFiles.get(fileName);
+        String commitedSHA = commitFiles.get(fileName);
         if (!sha1.equals(commitedSHA)) {
             stagingArea.map.put(fileName, contents);
             writeObject(STAGING_AREA, stagingArea);
@@ -112,9 +110,7 @@ public class Repository {
             System.exit(0);
         }
         Commit parentCommit = checkOutCommit(readContentsAsString(HEAD));
-        HashMap<String, String> newCommitFiles = parentCommit.isEmpty()
-                ? new HashMap<>()
-                : parentCommit.getFiles();
+        HashMap<String, String> newCommitFiles =  parentCommit.getFiles();
         for (Map.Entry<String, String> set : stagingArea.map.entrySet()) {
             String contents = set.getValue();
             String fileName = set.getKey();
@@ -147,8 +143,7 @@ public class Repository {
     public static void rm(String fileName) {
         StagingArea stagingArea = readObject(STAGING_AREA, StagingArea.class);
         Commit activeCommit = checkOutCommit(readContentsAsString(HEAD));
-        boolean untracked = activeCommit.isEmpty()
-                || !activeCommit.getFiles().containsKey(fileName);
+        boolean untracked = !activeCommit.getFiles().containsKey(fileName);
         if (untracked) { //check if file is untracked so that we don't rm it
             if (!stagingArea.map.containsKey(fileName)) {
                 System.out.println("No reason to remove the file.");
@@ -245,23 +240,21 @@ public class Repository {
                 }
             }
         }
-        if (commitedFiles != null) {
-            for (Map.Entry<String, String> set : commitedFiles.entrySet()) {
-                String fileName = set.getKey();
-                String commitedSha = set.getValue();
-                if ((currentFiles == null || !currentFiles.contains(fileName))
-                        && !stagingArea.map.containsKey(fileName)) {
-                    modificationsNotStaged.append(fileName)
-                            .append(" (deleted)").append("\n");
-                } else if (currentFiles != null
-                        && currentFiles.contains(fileName)
-                        && !stagingArea.map.containsKey(fileName)
-                        && !commitedSha.equals(
-                        sha1(readContentsAsString(join(CWD, fileName)))
-                )) {
-                    modificationsNotStaged.append(fileName)
-                            .append(" (modified)").append("\n");
-                }
+        for (Map.Entry<String, String> set : commitedFiles.entrySet()) {
+            String fileName = set.getKey();
+            String commitedSha = set.getValue();
+            if ((currentFiles == null || !currentFiles.contains(fileName))
+                    && !stagingArea.map.containsKey(fileName)) {
+                modificationsNotStaged.append(fileName)
+                        .append(" (deleted)").append("\n");
+            } else if (currentFiles != null
+                    && currentFiles.contains(fileName)
+                    && !stagingArea.map.containsKey(fileName)
+                    && !commitedSha.equals(
+                    sha1(readContentsAsString(join(CWD, fileName)))
+            )) {
+                modificationsNotStaged.append(fileName)
+                        .append(" (modified)").append("\n");
             }
         }
         HashSet<String> untracked = checkUntracked();
@@ -413,7 +406,7 @@ public class Repository {
         for (Map.Entry<String, String> set : activeF.entrySet()) {
             String fileName = set.getKey();
             String activeFsha = set.getValue();
-            String splitFsha = splitF != null ? splitF.get(fileName) : null;
+            String splitFsha = splitF.get(fileName);
 
             if (activeFsha.equals(splitFsha) && !givenF.containsKey(fileName)) {
                 stagingArea.map.put(fileName, null);
@@ -424,13 +417,19 @@ public class Repository {
             String fileName = set.getKey();
             String givenFsha = set.getValue();
             String activeFsha = activeF.get(fileName);
-            String splitFsha = splitF != null ? splitF.get(fileName) : null;
+            String splitFsha = splitF.get(fileName);
 
             if (splitFsha == null) {
                 if (activeFsha == null) {
                     checkOutFileInCommit(given, fileName);
                     String content = readContentsAsString(join(FILES, givenFsha));
                     stagingArea.map.put(fileName, content);
+                } else if (!activeFsha.equals(givenFsha)) {
+                    String fileContents =
+                            createConflictFile(activeFsha, givenFsha);
+                    writeContents(join(CWD, fileName), fileContents);
+                    stagingArea.map.put(fileName, fileContents);
+                    conflict = true;
                 }
             } else {
                 if (!givenFsha.equals(splitFsha)
@@ -440,16 +439,10 @@ public class Repository {
                     stagingArea.map.put(fileName, content);
                 } else if (!givenFsha.equals(splitFsha)
                         && !activeFsha.equals(givenFsha)) {
-                    File aFile = join(FILES, activeFsha);
-                    File gFile = join(FILES, givenFsha);
-                    StringBuilder fileContents = new StringBuilder();
-                    fileContents.append("<<<<<<< HEAD\n");
-                    fileContents.append(readContentsAsString(aFile));
-                    fileContents.append("=======\n");
-                    fileContents.append(readContentsAsString(gFile));
-                    fileContents.append(">>>>>>>");
-                    writeContents(join(CWD, fileName), fileContents.toString());
-                    stagingArea.map.put(fileName, fileContents.toString());
+                    String fileContents =
+                            createConflictFile(activeFsha, givenFsha);
+                    writeContents(join(CWD, fileName), fileContents);
+                    stagingArea.map.put(fileName, fileContents);
                     conflict = true;
                 }
             }
@@ -457,6 +450,16 @@ public class Repository {
 
         writeObject(STAGING_AREA, stagingArea);
         return conflict;
+    }
+
+    public static String createConflictFile(String sha1, String sha2) {
+        File file1 = join(FILES, sha1);
+        File file2 = join(FILES, sha2);
+        return "<<<<<<< HEAD\n" +
+                readContentsAsString(file1) +
+                "=======\n" +
+                readContentsAsString(file2) +
+                ">>>>>>>\n";
     }
 
     // Helper method to find and return split point.
@@ -591,19 +594,14 @@ public class Repository {
                 checkOutCommit(commitID).getFiles();
         checkUntrackedFile();
         writeContents(HEAD, commitID);
-        if (replaceFiles != null) {
-            for (Map.Entry<String, String> set : replaceFiles.entrySet()) {
-                File file = join(CWD, set.getKey());
-                File blob = join(FILES, set.getValue());
-                writeContents(file, readContentsAsString(blob));
-            }
+        for (Map.Entry<String, String> set : replaceFiles.entrySet()) {
+            File file = join(CWD, set.getKey());
+            File blob = join(FILES, set.getValue());
+            writeContents(file, readContentsAsString(blob));
         }
-        if (activeCommitFiles != null) {
-            for (Map.Entry<String, String> set: activeCommitFiles.entrySet()) {
-                if (replaceFiles == null
-                        || !replaceFiles.containsKey(set.getKey())) {
-                    restrictedDelete(join(CWD, set.getKey()));
-                }
+        for (Map.Entry<String, String> set: activeCommitFiles.entrySet()) {
+            if (!replaceFiles.containsKey(set.getKey())) {
+                restrictedDelete(join(CWD, set.getKey()));
             }
         }
     }
@@ -633,8 +631,7 @@ public class Repository {
         List<String> currentFiles = plainFilenamesIn(CWD);
         if (currentFiles != null) {
             for (String file : currentFiles) {
-                if ((activeCommitFiles == null
-                        || !activeCommitFiles.containsKey(file))
+                if (!activeCommitFiles.containsKey(file)
                         && !stagingArea.map.containsKey(file)) {
                     set.add(file);
                 }
