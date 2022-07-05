@@ -402,65 +402,129 @@ public class Repository {
         HashMap<String, String> activeF = checkOutCommit(active).getFiles();
         HashMap<String, String> givenF = checkOutCommit(given).getFiles();
         HashMap<String, String> splitF = checkOutCommit(split).getFiles();
+        HashSet<String> allFiles = new HashSet<>();
+        allFiles.addAll(activeF.keySet());
+        allFiles.addAll(givenF.keySet());
+        allFiles.addAll(splitF.keySet());
+        for (String fileName: allFiles) {
+            String aSha = activeF.get(fileName);
+            String gSha = givenF.get(fileName);
+            String sSha = splitF.get(fileName);
+            String aC = aSha != null
+                    ? readContentsAsString(join(FILES, aSha))
+                    : "\n";
+            String gC = gSha != null
+                    ? readContentsAsString(join(FILES, gSha))
+                    : "\n";
+            String cC = "<<<<<<< HEAD\n" + aC + "=======\n" + gC + ">>>>>>>\n";
 
-        for (Map.Entry<String, String> set : activeF.entrySet()) {
-            String fileName = set.getKey();
-            String activeFsha = set.getValue();
-            String splitFsha = splitF.get(fileName);
-
-            if (activeFsha.equals(splitFsha) && !givenF.containsKey(fileName)) {
+            /**
+             * Any files that were not present at the split point and are
+             * present only in the given branch should be checked out and
+             * staged.
+             **/
+            if (aSha == null && sSha == null) {
+                checkOutFileInCommit(given, fileName);
+                stagingArea.map.put(fileName, gC);
+            }
+            /**
+             * Any files that have been modified in the given branch since the
+             * split point, but not modified in the current branch since the
+             * split point should be changed to their versions in the given
+             * branch.
+             */
+            if (aSha != null && gSha != null && sSha != null) {
+                if (!gSha.equals(sSha) && aSha.equals(sSha)) {
+                    stagingArea.map.put(fileName, gC);
+                }
+            }
+            /**
+             * Any files present at the split point, unmodified in the current
+             * branch, and absent in the given branch should be removed.
+             **/
+            if (gSha == null && aSha != null && aSha.equals(sSha)) {
                 stagingArea.map.put(fileName, null);
             }
-        }
 
-        for (Map.Entry<String, String> set : givenF.entrySet()) {
-            String fileName = set.getKey();
-            String givenFsha = set.getValue();
-            String activeFsha = activeF.get(fileName);
-            String splitFsha = splitF.get(fileName);
-
-            if (splitFsha == null) {
-                if (activeFsha == null) {
-                    checkOutFileInCommit(given, fileName);
-                    String content = readContentsAsString(join(FILES, givenFsha));
-                    stagingArea.map.put(fileName, content);
-                } else if (!activeFsha.equals(givenFsha)) {
-                    String fileContents =
-                            createConflictFile(activeFsha, givenFsha);
-                    writeContents(join(CWD, fileName), fileContents);
-                    stagingArea.map.put(fileName, fileContents);
-                    conflict = true;
-                }
-            } else {
-                if (!givenFsha.equals(splitFsha)
-                        && activeFsha.equals(splitFsha)) {
-                    checkOutFileInCommit(given, fileName);
-                    String content = readContentsAsString(join(FILES, givenFsha));
-                    stagingArea.map.put(fileName, content);
-                } else if (!givenFsha.equals(splitFsha)
-                        && !activeFsha.equals(givenFsha)) {
-                    String fileContents =
-                            createConflictFile(activeFsha, givenFsha);
-                    writeContents(join(CWD, fileName), fileContents);
-                    stagingArea.map.put(fileName, fileContents);
-                    conflict = true;
-                }
+            /**
+             * Any files modified in different ways in the current and given
+             * branches are in conflict. “Modified in different ways” can
+             * mean that the contents of both are changed and different from
+             * other, or the contents of one are changed and the other file is
+             * deleted, or the file was absent at the split point and has
+             * different contents in the given and current branches. In this
+             * case, replace the contents of the conflicted file with
+             * cC (conflict content).
+             */
+            if ((aSha != null && gSha != null && !aSha.equals(gSha))
+                    || (sSha != null && ((aSha != null && !aSha.equals(sSha)
+                    && gSha == null) ||(gSha != null && !gSha.equals(sSha)
+                    && aSha == null)))) {
+                writeContents(join(CWD, fileName), cC);
+                stagingArea.map.put(fileName, cC);
+                conflict = true;
             }
         }
 
         writeObject(STAGING_AREA, stagingArea);
         return conflict;
     }
+//    private static boolean merge(String active, String given, String split) {
+//        boolean conflict = false;
+//        StagingArea stagingArea = readObject(STAGING_AREA, StagingArea.class);
+//        HashMap<String, String> activeF = checkOutCommit(active).getFiles();
+//        HashMap<String, String> givenF = checkOutCommit(given).getFiles();
+//        HashMap<String, String> splitF = checkOutCommit(split).getFiles();
+//
+//        for (Map.Entry<String, String> set : activeF.entrySet()) {
+//            String fileName = set.getKey();
+//            String activeFsha = set.getValue();
+//            String splitFsha = splitF.get(fileName);
+//
+//            if (activeFsha.equals(splitFsha) && !givenF.containsKey(fileName)) {
+//                stagingArea.map.put(fileName, null);
+//            }
+//        }
+//
+//        for (Map.Entry<String, String> set : givenF.entrySet()) {
+//            String fileName = set.getKey();
+//            String givenFsha = set.getValue();
+//            String activeFsha = activeF.get(fileName);
+//            String splitFsha = splitF.get(fileName);
+//
+//            if (splitFsha == null) {
+//                if (activeFsha == null) {
+//                    checkOutFileInCommit(given, fileName);
+//                    String content = readContentsAsString(join(FILES, givenFsha));
+//                    stagingArea.map.put(fileName, content);
+//                } else if (!activeFsha.equals(givenFsha)) {
+//                    String fileContents =
+//                            createConflictFile(activeFsha, givenFsha);
+//                    writeContents(join(CWD, fileName), fileContents);
+//                    stagingArea.map.put(fileName, fileContents);
+//                    conflict = true;
+//                }
+//            } else {
+//                if (!givenFsha.equals(splitFsha)
+//                        && activeFsha.equals(splitFsha)) {
+//                    checkOutFileInCommit(given, fileName);
+//                    String content = readContentsAsString(join(FILES, givenFsha));
+//                    stagingArea.map.put(fileName, content);
+//                } else if (!givenFsha.equals(splitFsha)
+//                        && !activeFsha.equals(givenFsha)) {
+//                    String fileContents =
+//                            createConflictFile(activeFsha, givenFsha);
+//                    writeContents(join(CWD, fileName), fileContents);
+//                    stagingArea.map.put(fileName, fileContents);
+//                    conflict = true;
+//                }
+//            }
+//        }
+//
+//        writeObject(STAGING_AREA, stagingArea);
+//        return conflict;
+//    }
 
-    public static String createConflictFile(String sha1, String sha2) {
-        File file1 = join(FILES, sha1);
-        File file2 = join(FILES, sha2);
-        return "<<<<<<< HEAD\n" +
-                readContentsAsString(file1) +
-                "=======\n" +
-                readContentsAsString(file2) +
-                ">>>>>>>\n";
-    }
 
     // Helper method to find and return split point.
     private static String splitPointID(String commitID) {
