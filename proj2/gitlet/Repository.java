@@ -422,33 +422,28 @@ public class Repository {
             String cC = "<<<<<<< HEAD\n" + aC + "=======\n" + gC + ">>>>>>>\n";
 
             /**
-             * Any files that were not present at the split point and are
-             * present only in the given branch should be checked out and
-             * staged.
-             **/
-            if (aSha == null && sSha == null) {
-                checkOutFileInCommit(given, fileName);
-                stagingArea.map.put(fileName, gC);
-            }
-            /**
              * Any files that have been modified in the given branch since the
              * split point, but not modified in the current branch since the
              * split point should be changed to their versions in the given
              * branch.
              */
-            if (aSha != null && gSha != null && sSha != null) {
-                if (!gSha.equals(sSha) && aSha.equals(sSha)) {
+            if (aSha != null && gSha != null && sSha != null
+                && !gSha.equals(sSha) && aSha.equals(sSha)) {
                     stagingArea.map.put(fileName, gC);
-                }
-            }
+            /**
+             * Any files that were not present at the split point and are
+             * present only in the given branch should be checked out and
+             * staged.
+             **/
+            } else if (aSha == null && sSha == null) {
+                checkOutFileInCommit(given, fileName);
+                stagingArea.map.put(fileName, gC);
             /**
              * Any files present at the split point, unmodified in the current
              * branch, and absent in the given branch should be removed.
              **/
-            if (gSha == null && aSha != null && aSha.equals(sSha)) {
+            } else if (gSha == null && aSha != null && aSha.equals(sSha)) {
                 stagingArea.map.put(fileName, null);
-            }
-
             /**
              * Any files modified in different ways in the current and given
              * branches are in conflict. “Modified in different ways” can
@@ -459,10 +454,10 @@ public class Repository {
              * case, replace the contents of the conflicted file with
              * cC (conflict content).
              */
-            if ((aSha != null && gSha != null && !aSha.equals(gSha))
-                || (gSha != null && sSha != null
+            } else if ((aSha != null && gSha != null && !aSha.equals(gSha))
+                    || (gSha != null && sSha != null
                     && !gSha.equals(sSha) && aSha == null)
-                || (aSha != null && sSha != null
+                    || (aSha != null && sSha != null
                     && !aSha.equals(sSha) && gSha == null)) {
                 writeContents(join(CWD, fileName), cC);
                 stagingArea.map.put(fileName, cC);
