@@ -347,6 +347,7 @@ public class Repository {
         StagingArea sa = readObject(STAGING_AREA, StagingArea.class);
         sa.map.clear();
         writeObject(STAGING_AREA, sa);
+        checkUntrackedFile(commitId);
         switchActiveCommit(commitId);
         File activeBranch = join(BRANCHES, readContentsAsString(ACTIVE_BRANCH));
         writeContents(activeBranch, commitId);
@@ -382,12 +383,12 @@ public class Repository {
             System.exit(0);
         }
         if (splitPointID.equals(currentBranchID)) {
-            switchActiveCommit(branchID);
+            checkOutBranch(branchName);
             writeContents(join(BRANCHES, "current"), currentBranch);
             writeContents(join(BRANCHES, currentBranch), splitPointID);
             join(BRANCHES, branchName).delete();
             System.out.println("Current branch fast-forwarded.");
-            System.exit(1);
+            System.exit(0);
         }
 
         boolean conflict = merge(currentBranchID, branchID, splitPointID);
@@ -415,10 +416,10 @@ public class Repository {
             String sSha = splitF.get(fileName);
             String aC = aSha != null
                     ? readContentsAsString(join(FILES, aSha))
-                    : " \n";
+                    : "";
             String gC = gSha != null
                     ? readContentsAsString(join(FILES, gSha))
-                    : " \n";
+                    : "";
             String cC = "<<<<<<< HEAD\n" + aC + "=======\n" + gC + ">>>>>>>\n";
 
             /**
