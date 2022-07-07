@@ -307,6 +307,7 @@ public class Repository {
         }
         File branch = join(BRANCHES, branchName);
         if (branch.exists()) {
+            checkUntrackedFile();
             String branchID = readContentsAsString(branch);
             switchActiveCommit(branchID);
             writeContents(join(BRANCHES, "current"), branchName);
@@ -343,10 +344,12 @@ public class Repository {
     }
 
     public static void reset(String commitId) {
-        switchActiveCommit(commitId);
         StagingArea sa = readObject(STAGING_AREA, StagingArea.class);
         sa.map.clear();
         writeObject(STAGING_AREA, sa);
+        switchActiveCommit(commitId);
+        File activeBranch = join(BRANCHES, readContentsAsString(ACTIVE_BRANCH));
+        writeContents(activeBranch, commitId);
     }
 
     public static void merge(String branchName) {
@@ -412,10 +415,10 @@ public class Repository {
             String sSha = splitF.get(fileName);
             String aC = aSha != null
                     ? readContentsAsString(join(FILES, aSha))
-                    : "\n";
+                    : " \n";
             String gC = gSha != null
                     ? readContentsAsString(join(FILES, gSha))
-                    : "\n";
+                    : " \n";
             String cC = "<<<<<<< HEAD\n" + aC + "=======\n" + gC + ">>>>>>>\n";
 
             /**
@@ -457,9 +460,10 @@ public class Repository {
              * cC (conflict content).
              */
             if ((aSha != null && gSha != null && !aSha.equals(gSha))
-                    || (sSha != null && ((aSha != null && !aSha.equals(sSha)
-                    && gSha == null) ||(gSha != null && !gSha.equals(sSha)
-                    && aSha == null)))) {
+                || (gSha != null && sSha != null
+                    && !gSha.equals(sSha) && aSha == null)
+                || (aSha != null && sSha != null
+                    && !aSha.equals(sSha) && gSha == null)) {
                 writeContents(join(CWD, fileName), cC);
                 stagingArea.map.put(fileName, cC);
                 conflict = true;
@@ -656,7 +660,6 @@ public class Repository {
                 checkOutCommit(readContentsAsString(HEAD)).getFiles();
         HashMap<String, String> replaceFiles =
                 checkOutCommit(commitID).getFiles();
-        checkUntrackedFile();
         writeContents(HEAD, commitID);
         for (Map.Entry<String, String> set : replaceFiles.entrySet()) {
             File file = join(CWD, set.getKey());
