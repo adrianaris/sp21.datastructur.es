@@ -307,8 +307,8 @@ public class Repository {
         }
         File branch = join(BRANCHES, branchName);
         if (branch.exists()) {
-            checkUntrackedFile();
             String branchID = readContentsAsString(branch);
+            checkUntrackedFile(branchID);
             switchActiveCommit(branchID);
             writeContents(join(BRANCHES, "current"), branchName);
         } else {
@@ -373,7 +373,7 @@ public class Repository {
         }
 
         String branchID = readContentsAsString(branch);
-        checkUntrackedFile();
+        checkUntrackedFile(branchID);
         String splitPointID = splitPointID(branchID);
 
         if (branchID.equals(splitPointID)) {
@@ -429,7 +429,8 @@ public class Repository {
              */
             if (aSha != null && gSha != null && sSha != null
                 && !gSha.equals(sSha) && aSha.equals(sSha)) {
-                    stagingArea.map.put(fileName, gC);
+                checkOutFileInCommit(given, fileName);
+                stagingArea.map.put(fileName, gC);
             /**
              * Any files that were not present at the split point and are
              * present only in the given branch should be checked out and
@@ -454,7 +455,8 @@ public class Repository {
              * case, replace the contents of the conflicted file with
              * cC (conflict content).
              */
-            } else if ((aSha != null && gSha != null && !aSha.equals(gSha))
+            } else if ((aSha != null && gSha != null && !aSha.equals(gSha)
+                    && !gSha.equals(sSha))
                     || (gSha != null && sSha != null
                     && !gSha.equals(sSha) && aSha == null)
                     || (aSha != null && sSha != null
@@ -672,11 +674,16 @@ public class Repository {
      * Helper method that only prints out an error to the terminal and exits
      * should there be any untracked files.
      */
-    private static void checkUntrackedFile() {
-        if (!checkUntracked().isEmpty()) {
-            System.out.println("There is an untracked file in the"
-                    + " way; delete it, or add and commit it first.");
-            System.exit(0);
+    private static void checkUntrackedFile(String commitID) {
+        HashMap<String, String> files = checkOutCommit(commitID).getFiles();
+        for (String file : checkUntracked()) {
+            String shaCurrent = sha1(readContentsAsString(join(CWD, file)));
+            String shaGiven = files.get(file);
+            if (shaGiven != null && !shaCurrent.equals(shaGiven)) {
+                System.out.println("There is an untracked file in the"
+                        + " way; delete it, or add and commit it first.");
+                System.exit(0);
+            }
         }
     }
 
