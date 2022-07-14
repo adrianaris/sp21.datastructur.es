@@ -49,4 +49,11 @@ public class Engine {
         TETile[][] finalWorldFrame = null;
         return finalWorldFrame;
     }
+
+    public static void main(String[] args) {
+        TERenderer renderer = new TERenderer();
+        Engine engine = new Engine();
+        TETile[][] world = engine.interactWithInputString("N123123123S");
+        renderer.renderFrame(world);
+    }
 }
